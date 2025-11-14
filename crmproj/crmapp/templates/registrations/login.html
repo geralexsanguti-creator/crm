@@ -1,0 +1,67 @@
+{% load static %}   
+<!DOCTYPE html>
+<html lang="es">    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Control Debito</title>
+    <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">    
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+        
+        <!-- Mensajes de error -->
+        {% if form.errors %}
+        <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <strong>Error:</strong> Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.
+        </div>
+        {% endif %}
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-3 rounded {% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700{% else %}bg-blue-100 border border-blue-400 text-blue-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if next %}
+            {% if user.is_authenticated %}
+            <div class="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+                No tienes acceso a esta página. Por favor, inicia sesión con una cuenta que tenga permisos.
+            </div>
+            {% else %}
+            <div class="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                Por favor, inicia sesión para acceder a esta página.
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700 font-semibold mb-2">Usuario</label>
+                <input type="text" name="username" id="username" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 font-semibold mb-2">Contraseña</label>
+                <input type="password" name="password" id="password" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                Iniciar Sesión
+            </button>
+            
+            <!-- Campo hidden para redirección -->
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>

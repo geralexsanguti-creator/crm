@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Crear Nuevo Producto</h2>
+    
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Campo Nombre del Producto -->
+        <div>
+            <label for="{{ form.nombre_producto.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                {{ form.nombre_producto.label }}
+            </label>
+            {{ form.nombre_producto }}
+            {% if form.nombre_producto.help_text %}
+                <p class="mt-1 text-sm text-gray-500">{{ form.nombre_producto.help_text }}</p>
+            {% endif %}
+            {% if form.nombre_producto.errors %}
+                <div class="mt-1 text-sm text-red-600">{{ form.nombre_producto.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Descripción -->
+        <div>
+            <label for="{{ form.descripcion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                {{ form.descripcion.label }}
+            </label>
+            {{ form.descripcion }}
+            {% if form.descripcion.help_text %}
+                <p class="mt-1 text-sm text-gray-500">{{ form.descripcion.help_text }}</p>
+            {% endif %}
+            {% if form.descripcion.errors %}
+                <div class="mt-1 text-sm text-red-600">{{ form.descripcion.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Precio Base -->
+        <div>
+            <label for="{{ form.precio_base.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                {{ form.precio_base.label }}
+            </label>
+            <div class="relative rounded-md shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">$</span>
+                </div>
+                {{ form.precio_base }}
+            </div>
+            {% if form.precio_base.help_text %}
+                <p class="mt-1 text-sm text-gray-500">{{ form.precio_base.help_text }}</p>
+            {% endif %}
+            {% if form.precio_base.errors %}
+                <div class="mt-1 text-sm text-red-600">{{ form.precio_base.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Empresa -->
+        <div>
+            <label for="{{ form.empresa.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                {{ form.empresa.label }}
+            </label>
+            {{ form.empresa }}
+            {% if form.empresa.help_text %}
+                <p class="mt-1 text-sm text-gray-500">{{ form.empresa.help_text }}</p>
+            {% endif %}
+            {% if form.empresa.errors %}
+                <div class="mt-1 text-sm text-red-600">{{ form.empresa.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end space-x-3 pt-4">
+            <a href="{% url 'lista_productos' %}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Cancelar
+            </a>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Guardar Producto
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

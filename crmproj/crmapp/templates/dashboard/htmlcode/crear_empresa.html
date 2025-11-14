@@ -1,0 +1,57 @@
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label for="{{ form.nombre_empresa.id_for_label }}" class="form-label">
+            {{ form.nombre_empresa.label }}
+        </label>
+        {{ form.nombre_empresa }}
+        {% if form.nombre_empresa.help_text %}
+            <div class="form-text">{{ form.nombre_empresa.help_text }}</div>
+        {% endif %}
+        {% if form.nombre_empresa.errors %}
+            <div class="text-danger">{{ form.nombre_empresa.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.comision_aplicable.id_for_label }}" class="form-label">
+            {{ form.comision_aplicable.label }}
+        </label>
+        {{ form.comision_aplicable }}
+        {% if form.comision_aplicable.help_text %}
+            <div class="form-text">{{ form.comision_aplicable.help_text }}</div>
+        {% endif %}
+        {% if form.comision_aplicable.errors %}
+            <div class="text-danger">{{ form.comision_aplicable.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.contacto_email.id_for_label }}" class="form-label">
+            {{ form.contacto_email.label }}
+        </label>
+        {{ form.contacto_email }}
+        {% if form.contacto_email.help_text %}
+            <div class="form-text">{{ form.contacto_email.help_text }}</div>
+        {% endif %}
+        {% if form.contacto_email.errors %}
+            <div class="text-danger">{{ form.contacto_email.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="{{ form.telefono.id_for_label }}" class="form-label">
+            {{ form.telefono.label }}
+        </label>
+        {{ form.telefono }}
+        {% if form.telefono.help_text %}
+            <div class="form-text">{{ form.telefono.help_text }}</div>
+        {% endif %}
+        {% if form.telefono.errors %}
+            <div class="text-danger">{{ form.telefono.errors }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Empresa</button>
+</form>

@@ -1,0 +1,187 @@
+<dialog id="modalAgregarCliente" class="modal">
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalAgregarCliente()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Agregar Nuevo Cliente</h3>
+        
+        <form method="POST" action="{% url 'crear_cliente' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre del Cliente -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre del Cliente *</span>
+                        </label>
+                        <input type="text" 
+                               name="nombre_cliente" 
+                               class="input input-bordered w-full {% if form.nombre_cliente.errors %}input-error{% endif %}"
+                               placeholder="Nombre completo del cliente"
+                               value="{{ form.nombre_cliente.value|default:'' }}"
+                               required>
+                        {% if form.nombre_cliente.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.nombre_cliente.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Email</span>
+                            <span class="label-text-alt text-gray-500">Opcional</span>
+                        </label>
+                        <input type="email" 
+                               name="email" 
+                               class="input input-bordered w-full {% if form.email.errors %}input-error{% endif %}"
+                               placeholder="cliente@email.com"
+                               value="{{ form.email.value|default:'' }}">
+                        {% if form.email.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.email.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Teléfono -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Teléfono</span>
+                            <span class="label-text-alt text-gray-500">Opcional</span>
+                        </label>
+                        <input type="tel" 
+                               name="telefono" 
+                               class="input input-bordered w-full {% if form.telefono.errors %}input-error{% endif %}"
+                               placeholder="+1 234 567 8900"
+                               value="{{ form.telefono.value|default:'' }}">
+                        {% if form.telefono.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.telefono.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Dirección</span>
+                    <span class="label-text-alt text-gray-500">Opcional</span>
+                </label>
+                <textarea name="direccion" 
+                          rows="3" 
+                          class="textarea textarea-bordered w-full {% if form.direccion.errors %}textarea-error{% endif %}"
+                          placeholder="Dirección completa del cliente...">{{ form.direccion.value|default:'' }}</textarea>
+                {% if form.direccion.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {{ form.direccion.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Mostrar errores generales del formulario -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <div class="flex-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                        </svg> 
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Mostrar mensajes de Django -->
+            {% if messages %}
+                <div class="space-y-2">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                            <div class="flex-1">
+                                {% if message.tags == 'error' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                                    </svg>
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">        
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>                      
+                                    </svg>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalAgregarCliente()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar Cliente</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalAgregarCliente()">close</button>
+    </form>
+</dialog>
+
+<script>
+function abrirModalAgregarCliente() {
+    document.getElementById('modalAgregarCliente').showModal();
+}
+
+function cerrarModalAgregarCliente() {
+    document.getElementById('modalAgregarCliente').close();
+}
+
+// Validación del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('#modalAgregarCliente form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const nombre = form.querySelector('[name="nombre_cliente"]').value.trim();
+            const email = form.querySelector('[name="email"]').value.trim();
+            
+            // Validar que al menos tenga nombre o email
+            if (!nombre) {
+                e.preventDefault();
+                alert('El nombre del cliente es obligatorio');
+                return false;
+            }
+            
+            // Validar formato de email si se proporciona
+            if (email && !isValidEmail(email)) {
+                e.preventDefault();
+                alert('Por favor ingrese un email válido');
+                return false;
+            }
+        });
+    }
+});
+
+// Validar formato de email
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Cerrar modal con ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalAgregarCliente();
+    }
+});
+</script>

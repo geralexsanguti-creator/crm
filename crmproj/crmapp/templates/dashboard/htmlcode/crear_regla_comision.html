@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Crear Regla de Comisión</h2>
+        <p class="mt-2 text-sm text-gray-600">Configure una nueva regla de comisión con criterios específicos.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Información Básica -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Columna Izquierda -->
+                <div class="space-y-6">
+                    <!-- Nombre Regla -->
+                    <div>
+                        <label for="{{ form.nombre_regla.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.nombre_regla.label }} *
+                        </label>
+                        {{ form.nombre_regla }}
+                        {% if form.nombre_regla.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.nombre_regla.help_text }}</p>
+                        {% endif %}
+                        {% if form.nombre_regla.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.nombre_regla.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Usuario Director -->
+                    <div>
+                        <label for="{{ form.usuario_director.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.usuario_director.label }} *
+                        </label>
+                        {{ form.usuario_director }}
+                        {% if form.usuario_director.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.usuario_director.help_text }}</p>
+                        {% endif %}
+                        {% if form.usuario_director.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.usuario_director.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Estado Activa -->
+                    <div class="flex items-center">
+                        {{ form.activa }}
+                        <label for="{{ form.activa.id_for_label }}" class="ml-2 block text-sm font-semibold text-gray-800">
+                            {{ form.activa.label }}
+                        </label>
+                    </div>
+                    {% if form.activa.help_text %}
+                        <p class="text-sm text-gray-500">{{ form.activa.help_text }}</p>
+                    {% endif %}
+                    {% if form.activa.errors %}
+                        <div class="mt-2 text-sm text-red-600 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ form.activa.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Columna Derecha - Comisiones -->
+                <div class="space-y-6">
+                    <!-- Comisión Empresa -->
+                    <div>
+                        <label for="{{ form.comision_empresa.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.comision_empresa.label }} *
+                        </label>
+                        <div class="relative">
+                            {{ form.comision_empresa }}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">%</span>
+                            </div>
+                        </div>
+                        {% if form.comision_empresa.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.comision_empresa.help_text }}</p>
+                        {% endif %}
+                        {% if form.comision_empresa.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.comision_empresa.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Comisión Usuario -->
+                    <div>
+                        <label for="{{ form.comision_usuario.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.comision_usuario.label }} *
+                        </label>
+                        <div class="relative">
+                            {{ form.comision_usuario }}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">%</span>
+                            </div>
+                        </div>
+                        {% if form.comision_usuario.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.comision_usuario.help_text }}</p>
+                        {% endif %}
+                        {% if form.comision_usuario.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.comision_usuario.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Total Comisiones -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold text-blue-800">Total Comisiones:</span>
+                            <span id="total-comisiones" class="text-lg font-bold text-blue-800">0%</span>
+                        </div>
+                        <p class="text-xs text-blue-600 mt-1">Suma de comisión empresa + comisión usuario</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Criterios -->
+            <div class="border-t border-gray-200 pt-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Criterios de Aplicación</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Montos -->
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-medium text-gray-700">Rango de Montos</h4>
+                        
+                        <!-- Monto Mínimo -->
+                        <div>
+                            <label for="{{ form.monto_minimo.id_for_label }}" class="block text-sm font-medium text-gray-600 mb-1">
+                                {{ form.monto_minimo.label }}
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                {{ form.monto_minimo }}
+                            </div>
+                            {% if form.monto_minimo.help_text %}
+                                <p class="mt-1 text-xs text-gray-500">{{ form.monto_minimo.help_text }}</p>
+                            {% endif %}
+                            {% if form.monto_minimo.errors %}
+                                <div class="mt-1 text-sm text-red-600">{{ form.monto_minimo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Monto Máximo -->
+                        <div>
+                            <label for="{{ form.monto_maximo.id_for_label }}" class="block text-sm font-medium text-gray-600 mb-1">
+                                {{ form.monto_maximo.label }}
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                {{ form.monto_maximo }}
+                            </div>
+                            {% if form.monto_maximo.help_text %}
+                                <p class="mt-1 text-xs text-gray-500">{{ form.monto_maximo.help_text }}</p>
+                            {% endif %}
+                            {% if form.monto_maximo.errors %}
+                                <div class="mt-1 text-sm text-red-600">{{ form.monto_maximo.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Productos -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700 mb-1">Productos Específicos</h4>
+                        <div>
+                            {{ form.productos }}
+                            {% if form.productos.help_text %}
+                                <p class="mt-1 text-xs text-gray-500">{{ form.productos.help_text }}</p>
+                            {% endif %}
+                            {% if form.productos.errors %}
+                                <div class="mt-1 text-sm text-red-600">{{ form.productos.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                <a href="{% url 'lista_reglas_comision' %}" class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Guardar Regla
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const comisionEmpresa = document.getElementById('{{ form.comision_empresa.id_for_label }}');
+    const comisionUsuario = document.getElementById('{{ form.comision_usuario.id_for_label }}');
+    const totalComisiones = document.getElementById('total-comisiones');
+    
+    function actualizarTotalComisiones() {
+        const valorEmpresa = parseFloat(comisionEmpresa.value) || 0;
+        const valorUsuario = parseFloat(comisionUsuario.value) || 0;
+        const total = valorEmpresa + valorUsuario;
+        
+        totalComisiones.textContent = total + '%';
+        
+        // Cambiar color si excede 100%
+        if (total > 100) {
+            totalComisiones.classList.remove('text-blue-800');
+            totalComisiones.classList.add('text-red-600');
+        } else {
+            totalComisiones.classList.remove('text-red-600');
+            totalComisiones.classList.add('text-blue-800');
+        }
+    }
+    
+    comisionEmpresa.addEventListener('input', actualizarTotalComisiones);
+    comisionUsuario.addEventListener('input', actualizarTotalComisiones);
+    
+    // Calcular inicialmente
+    actualizarTotalComisiones();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,244 @@
+<dialog id="modalAgregarComision" class="modal" open>
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Agregar Nueva Comisión</h3>
+        <p class="text-sm text-gray-600 mb-6">Complete los datos para registrar una nueva comisión.</p>
+
+        <!-- Mensaje de error general -->
+        {% if form.errors %}
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-red-800 font-medium">Por favor corrija los errores en el formulario.</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'agregar_comision' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Usuario -->
+                <div class="col-span-1">
+                    <label for="id_usuario" class="block text-sm font-medium text-gray-700 mb-2">
+                        Usuario <span class="text-red-500">*</span>
+                    </label>
+                    <select id="id_usuario" name="usuario" required
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 {% if form.usuario.errors %}border-red-500{% endif %}">
+                        <option value="">Seleccionar usuario</option>
+                        {% for usuario in usuarios %}
+                        <option value="{{ usuario.id }}" 
+                                {% if form.usuario.value == usuario.id %}selected{% endif %}>
+                            {{ usuario.nombre }} - {{ usuario.email }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.usuario.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.usuario.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Venta -->
+                <div class="col-span-1">
+                    <label for="id_venta" class="block text-sm font-medium text-gray-700 mb-2">
+                        Venta <span class="text-red-500">*</span>
+                    </label>
+                    <select id="id_venta" name="venta" required
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 {% if form.venta.errors %}border-red-500{% endif %}">
+                        <option value="">Seleccionar venta</option>
+                        {% for venta in ventas %}
+                        <option value="{{ venta.venta_id }}" 
+                                {% if form.venta.value == venta.venta_id %}selected{% endif %}>
+                            Venta #{{ venta.venta_id }} - ${{ venta.monto_total }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.venta.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.venta.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Regla de Comisión -->
+                <div class="col-span-1">
+                    <label for="id_regla" class="block text-sm font-medium text-gray-700 mb-2">
+                        Regla de Comisión <span class="text-red-500">*</span>
+                    </label>
+                    <select id="id_regla" name="regla" required
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 {% if form.regla.errors %}border-red-500{% endif %}">
+                        <option value="">Seleccionar regla</option>
+                        {% for regla in reglas %}
+                        <option value="{{ regla.id }}" 
+                                {% if form.regla.value == regla.id %}selected{% endif %}>
+                            {{ regla.nombre }} - {{ regla.porcentaje_comision }}%
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.regla.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.regla.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Monto Comisión -->
+                <div class="col-span-1">
+                    <label for="id_monto_comision" class="block text-sm font-medium text-gray-700 mb-2">
+                        Monto Comisión <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" id="id_monto_comision" name="monto_comision" 
+                               value="{{ form.monto_comision.value|default:'' }}"
+                               step="0.01" min="0" required
+                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 pl-8 {% if form.monto_comision.errors %}border-red-500{% endif %}"
+                               placeholder="0.00">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500">$</span>
+                        </div>
+                    </div>
+                    {% if form.monto_comision.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.monto_comision.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Estado -->
+                <div class="col-span-1">
+                    <label for="id_estado" class="block text-sm font-medium text-gray-700 mb-2">
+                        Estado <span class="text-red-500">*</span>
+                    </label>
+                    <select id="id_estado" name="estado" required
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 {% if form.estado.errors %}border-red-500{% endif %}">
+                        <option value="">Seleccionar estado</option>
+                        <option value="Pendiente" {% if form.estado.value == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="Pagada" {% if form.estado.value == 'Pagada' %}selected{% endif %}>Pagada</option>
+                        <option value="Cancelada" {% if form.estado.value == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                    </select>
+                    {% if form.estado.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.estado.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Fecha Pagada -->
+                <div class="col-span-1" id="fecha_pagada_container">
+                    <label for="id_fecha_pagada" class="block text-sm font-medium text-gray-700 mb-2">
+                        Fecha de Pago
+                    </label>
+                    <input type="date" id="id_fecha_pagada" name="fecha_pagada"
+                           value="{{ form.fecha_pagada.value|default:'' }}"
+                           class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 {% if form.fecha_pagada.errors %}border-red-500{% endif %}">
+                    {% if form.fecha_pagada.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.fecha_pagada.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Información de Cálculo -->
+            <div class="bg-blue-50 rounded-lg p-4 mt-4">
+                <h4 class="text-sm font-semibold text-blue-800 mb-2">Información de Cálculo</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-600">Monto Venta:</span>
+                        <span id="monto_venta_info" class="ml-2 font-semibold">$0.00</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-600">Porcentaje:</span>
+                        <span id="porcentaje_info" class="ml-2 font-semibold">0%</span>
+                    </div>
+                </div>
+                <p class="text-xs text-blue-600 mt-2" id="monto_calculado">
+                    {% if form.monto_comision.value %}
+                    Monto actual: ${{ form.monto_comision.value }}
+                    {% else %}
+                    El monto se calculará automáticamente al seleccionar venta y regla
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <button type="button" onclick="cerrarModalAgregar()" 
+                        class="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    Cancelar
+                </button>
+                <button type="submit" 
+                        class="px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    Guardar Comisión
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function cerrarModalAgregar() {
+            const modal = document.getElementById('modalAgregarComision');
+            modal.close();
+            // Limpiar formulario
+            document.querySelector('#modalAgregarComision form').reset();
+        }
+
+        // Calcular monto automáticamente cuando cambian venta o regla
+        document.getElementById('id_venta').addEventListener('change', calcularComision);
+        document.getElementById('id_regla').addEventListener('change', calcularComision);
+        document.getElementById('id_estado').addEventListener('change', toggleFechaPagada);
+
+        function calcularComision() {
+            const ventaSelect = document.getElementById('id_venta');
+            const reglaSelect = document.getElementById('id_regla');
+            const montoInput = document.getElementById('id_monto_comision');
+            const montoCalculado = document.getElementById('monto_calculado');
+            const montoVentaInfo = document.getElementById('monto_venta_info');
+            const porcentajeInfo = document.getElementById('porcentaje_info');
+
+            const ventaSeleccionada = ventaSelect.options[ventaSelect.selectedIndex];
+            const reglaSeleccionada = reglaSelect.options[reglaSelect.selectedIndex];
+
+            if (ventaSeleccionada.value && reglaSeleccionada.value) {
+                // Extraer monto de venta del texto de la opción
+                const ventaText = ventaSeleccionada.text;
+                const montoMatch = ventaText.match(/\$([0-9]+\.?[0-9]*)/);
+                const montoVenta = montoMatch ? parseFloat(montoMatch[1]) : 0;
+                
+                // Extraer porcentaje de regla del texto de la opción
+                const reglaText = reglaSeleccionada.text;
+                const porcentajeMatch = reglaText.match(/([0-9]+\.?[0-9]*)%/);
+                const porcentaje = porcentajeMatch ? parseFloat(porcentajeMatch[1]) : 0;
+                
+                const montoComision = (montoVenta * porcentaje) / 100;
+
+                montoInput.value = montoComision.toFixed(2);
+                montoVentaInfo.textContent = `$${montoVenta.toFixed(2)}`;
+                porcentajeInfo.textContent = `${porcentaje}%`;
+                montoCalculado.textContent = `Calculado: $${montoVenta.toFixed(2)} × ${porcentaje}% = $${montoComision.toFixed(2)}`;
+            }
+        }
+
+        function toggleFechaPagada() {
+            const estado = document.getElementById('id_estado').value;
+            const fechaContainer = document.getElementById('fecha_pagada_container');
+            
+            if (estado === 'Pagada') {
+                fechaContainer.style.display = 'block';
+                // Establecer fecha actual si no hay valor
+                if (!document.getElementById('id_fecha_pagada').value) {
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('id_fecha_pagada').value = today;
+                }
+            } else {
+                fechaContainer.style.display = 'none';
+                document.getElementById('id_fecha_pagada').value = '';
+            }
+        }
+
+        // Inicializar estado del campo fecha pagada
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleFechaPagada();
+            
+            // Si hay valores en el formulario (por errores de validación), calcular comisión
+            if (document.getElementById('id_venta').value && document.getElementById('id_regla').value) {
+                calcularComision();
+            }
+        });
+    </script>
+</dialog>

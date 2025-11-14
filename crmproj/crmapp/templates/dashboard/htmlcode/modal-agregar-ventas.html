@@ -1,0 +1,99 @@
+<!-- Tabla de Productos -->
+    <div class="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <!-- head -->
+                <thead class="bg-base-200">
+                    <tr>
+                        <th>
+                            <label>
+                                <input type="checkbox" class="checkbox" />
+                            </label>
+                        </th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <th>
+                            <label>
+                                <input type="checkbox" class="checkbox" />
+                            </label>
+                        </th>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">
+                                    <div class="mask mask-squircle w-12 h-12">
+                                        <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/dashboard.png' %}{% endif %}" 
+                                             alt="{{ producto.nombre }}" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ producto.nombre }}</div>
+                                    <div class="text-sm opacity-50">{{ producto.codigo }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-ghost badge-sm">{{ producto.categoria }}</span>
+                        </td>
+                        <td>${{ producto.precio }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ producto.cantidad }}</span>
+                                {% if producto.cantidad < producto.cantidad_minimo %}
+                                <div class="tooltip" data-tip="cantidad bajo">
+                                    <span class="text-warning">⚠️</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if producto.activo %}
+                            <span class="badge badge-success">Activo</span>
+                            {% else %}
+                            <span class="badge badge-error">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+
+                            
+                            <div class="flex gap-2">
+                                <!-- Botón Editar -->
+                                <button onclick="abrirModalEditar('{{ producto.producto_id }}')" 
+                                        class="btn btn-ghost btn-xs btn-info tooltip" 
+                                        data-tip="Editar">
+                                    ✏️
+                                </button>
+                                
+                                <!-- Botón Eliminar -->
+                                <button onclick="abrirModalEliminar('{{ producto.producto_id }}', '{{ producto.nombre|escapejs }}')" 
+                                        class="btn btn-ghost btn-xs btn-error tooltip" 
+                                        data-tip="Eliminar">
+                                    🗑️
+                                </button>
+                            </div>  
+                            
+                            
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl">📦</span>
+                                <p class="text-lg">No se encontraron productos</p>
+                                <!--<button class="btn btn-primary mt-2">Agregar Primer Producto</button>-->
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>

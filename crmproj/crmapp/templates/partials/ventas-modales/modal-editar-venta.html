@@ -1,0 +1,271 @@
+<dialog id="modalEditarVenta" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalEditarVenta()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Editar Venta</h3>
+        
+        <form method="POST" action="{% url 'editar_venta' %}" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" id="ventaIdEditar" name="venta_id">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Producto *</span>
+                        </label>
+                        <select id="productoEditar" name="producto" class="select select-bordered w-full" required>
+                            <option value="">Selecciona un producto</option>
+                            {% for producto in productos %}
+                            <option value="{{ producto.producto_id }}" data-precio="{{ producto.precio_base }}">
+                                {{ producto.nombre_producto }} - ${{ producto.precio_base }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Cliente *</span>
+                        </label>
+                        <select id="clienteEditar" name="cliente" class="select select-bordered w-full" required>
+                            <option value="">Selecciona un cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.cliente_id }}">
+                                {{ cliente.nombre_cliente }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Usuario/Vendedor -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Vendedor *</span>
+                        </label>
+                        <select id="usuarioEditar" name="usuario" class="select select-bordered w-full" required>
+                            <option value="">Selecciona un vendedor</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.user_id }}">
+                                {{ usuario.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Fecha Inicio -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Fecha Inicio *</span>
+                        </label>
+                        <input type="date" id="fechaInicioEditar" name="fecha_inicio" class="input input-bordered w-full" required>
+                    </div>
+
+                    <!-- Fecha Fin -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Fecha Fin</span>
+                            <span class="label-text-alt text-gray-500">Opcional</span>
+                        </label>
+                        <input type="date" id="fechaFinEditar" name="fecha_fin" class="input input-bordered w-full">
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Estado *</span>
+                        </label>
+                        <select id="estadoEditar" name="estado" class="select select-bordered w-full" required>
+                            {% for value, label in ESTADO_CHOICES %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Monto Venta -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Monto Venta *</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" id="montoVentaEditar" name="monto_venta" 
+                                   class="input input-bordered w-full" step="0.01" min="0" 
+                                   placeholder="0.00" required>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">$</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Producto Seleccionado -->
+            <div id="infoProductoEditar" class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <h4 class="font-semibold text-blue-800 mb-2">Información del Producto</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-600">Precio Base:</span>
+                        <span id="precioBaseInfoEditar" class="font-semibold ml-2">$0.00</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-600">Empresa:</span>
+                        <span id="empresaInfoEditar" class="font-semibold ml-2">-</span>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-blue-600">Descripción:</span>
+                        <span id="descripcionInfoEditar" class="ml-2">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de la Venta -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h4 class="font-semibold text-gray-800 mb-2">Información de la Venta</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">ID Venta:</span>
+                        <span id="infoVentaId" class="font-mono font-semibold ml-2">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Fecha Creación:</span>
+                        <span id="infoFechaCreacion" class="font-semibold ml-2">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Estado Actual:</span>
+                        <span id="infoEstadoActual" class="font-semibold ml-2">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Vendedor:</span>
+                        <span id="infoVendedorActual" class="font-semibold ml-2">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerta para ventas no editables -->
+            <div class="alert alert-warning hidden" id="alertaNoEditable">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span>Las ventas finalizadas o canceladas no pueden ser editadas.</span>
+            </div>
+
+            <!-- Mostrar errores del formulario -->
+            {% if form.errors %}
+            <div class="alert alert-error">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                    </svg>
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Mostrar mensajes de Django -->
+            {% if messages %}
+            <div class="space-y-2">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                        <div class="flex-1">
+                            {% if message.tags == 'error' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                                </svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">        
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>                      
+                                </svg>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalEditarVenta()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="submitEditarVenta">Actualizar Venta</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalEditarVenta()">close</button>
+    </form>
+</dialog>
+
+<script>
+// Inicializar eventos cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar información del producto seleccionado
+    const productoSelect = document.getElementById('productoEditar');
+    if (productoSelect) {
+        productoSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const precio = selectedOption.getAttribute('data-precio');
+            const montoInput = document.getElementById('montoVentaEditar');
+            
+            if (precio && montoInput) {
+                montoInput.value = precio;
+            }
+            
+            // Aquí puedes agregar lógica para cargar más información del producto
+            // si tienes datos adicionales en data-attributes
+        });
+    }
+    
+    // Validación de fechas
+    const fechaInicio = document.getElementById('fechaInicioEditar');
+    const fechaFin = document.getElementById('fechaFinEditar');
+    
+    if (fechaInicio && fechaFin) {
+        fechaFin.addEventListener('change', function() {
+            if (fechaInicio.value && fechaFin.value && fechaInicio.value > fechaFin.value) {
+                alert('La fecha de fin no puede ser anterior a la fecha de inicio');
+                fechaFin.value = '';
+            }
+        });
+    }
+    
+    // Validación antes de enviar el formulario
+    const form = document.querySelector('#modalEditarVenta form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const monto = parseFloat(document.getElementById('montoVentaEditar').value);
+            if (monto <= 0) {
+                e.preventDefault();
+                alert('El monto de venta debe ser mayor a 0');
+                return false;
+            }
+            
+            if (fechaInicio.value && fechaFin.value && fechaInicio.value > fechaFin.value) {
+                e.preventDefault();
+                alert('La fecha de fin no puede ser anterior a la fecha de inicio');
+                return false;
+            }
+        });
+    }
+});
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalEditarVenta();
+    }
+});
+</script>

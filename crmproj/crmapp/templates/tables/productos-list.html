@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos{% endblock %}
+{% block content %}
+<h1>Productos</h1>
+<section class="productos">
+    <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Gestión de Productos</h2>
+                <p class="mt-2 text-sm text-gray-600">Administre el catálogo de productos de su organización.</p>
+            </div>
+            
+             <button class="btn btn-outline btn-success px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200" onclick="modalAgregarProducto.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nuevo Producto
+             </button>
+
+            {% include 'partials/productos-modales/modal-agregar-producto.html' %}
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Productos</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_productos }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-green-100">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Precio Promedio</p>
+                    <p class="text-2xl font-bold text-gray-900">${{ precio_promedio|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-purple-100">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Empresas Asociadas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_empresas }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-orange-100">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Agregados Hoy</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ productos_hoy }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Filtro por Empresa -->
+            <div>
+                <label for="empresa" class="block text-sm font-medium text-gray-700 mb-1">Empresa Socia</label>
+                <select id="empresa" name="empresa" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                    <option value="">Todas las empresas</option>
+                    {% for empresa in empresas %}
+                    <option value="{{ empresa.id }}">{{ empresa.nombre_empresa }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Filtro por Precio Mínimo -->
+            <div>
+                <label for="precio_min" class="block text-sm font-medium text-gray-700 mb-1">Precio Mínimo</label>
+                <div class="relative">
+                    <input type="number" id="precio_min" name="precio_min" placeholder="0" step="0.01" min="0" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">$</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtro por Precio Máximo -->
+            <div>
+                <label for="precio_max" class="block text-sm font-medium text-gray-700 mb-1">Precio Máximo</label>
+                <div class="relative">
+                    <input type="number" id="precio_max" name="precio_max" placeholder="10000" step="0.01" min="0" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">$</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-end space-x-4">
+                <button type="submit" class="w-full px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200">
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'lista_productos' %}" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200 text-center">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Productos -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <!-- Tabla de Productos -->
+    <div class="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <!-- head -->
+                <thead class="bg-base-200">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Empresa</th>                        
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ producto.nombre_producto }}</span>
+                            </div>
+                        </td>
+                       
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ producto.descripcion }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ producto.precio_base }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ producto.empresa.nombre_empresa }}</span>
+                            </div>
+                        </td>
+                        
+                        <td>                            
+                            <div class="flex gap-2">
+                                <!-- Botón Editar -->
+                                <button onclick="abrirModalEditar('{{ producto.producto_id }}', 
+                                                                '{{ producto.nombre_producto|escapejs }}', 
+                                                                '{{ producto.descripcion|escapejs }}', 
+                                                                '{{ producto.precio_base }}', 
+                                                                '{{ producto.empresa.empresa_id }}')" 
+                                        class="btn btn-ghost btn-xs btn-info tooltip" 
+                                        data-tip="Editar">
+                                    ✏️
+                                </button>
+                                
+                                <!-- Botón Eliminar -->
+                                <button onclick="abrirModalEliminar('{{ producto.producto_id }}', '{{ producto.nombre_producto|escapejs }}')" 
+                                        class="btn btn-ghost btn-xs btn-error tooltip" 
+                                        data-tip="Eliminar">
+                                    🗑️
+                                </button>
+                            </div>                            
+                            
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl">📦</span>
+                                <p class="text-lg">No se encontraron productos</p>
+                                <!--<button class="btn btn-primary mt-2">Agregar Primer Producto</button>-->
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        {% if productos.has_other_pages %}
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Mostrando {{ productos.start_index }} a {{ productos.end_index }} de {{ productos.paginator.count }} resultados
+            </div>
+            <div class="flex space-x-2">
+                {% if productos.has_previous %}
+                <a href="?page={{ productos.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Anterior
+                </a>
+                {% endif %}
+                
+                {% for num in productos.paginator.page_range %}
+                    {% if productos.number == num %}
+                    <span class="px-3 py-1 border border-purple-500 bg-purple-500 text-white rounded-md text-sm font-medium">
+                        {{ num }}
+                    </span>
+                    {% else %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if productos.has_next %}
+                <a href="?page={{ productos.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Siguiente
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+</section>
+{% include 'partials/productos-modales/modal-agregar-producto.html' %}
+{% include 'partials/productos-modales/modal-editar-producto.html' %}
+{% include 'partials/productos-modales/modal-eliminar-producto.html' %}
+<script>
+    function toggleMenu(menuId) {
+        const menu = document.getElementById(menuId);
+        menu.classList.toggle('hidden');
+    }
+
+    function confirmarEliminacion(productoId, productoNombre) {
+        const modal = document.getElementById('modalEliminarProducto');
+        modal.showModal();
+        document.getElementById('productoNombreEliminar').textContent = productoNombre;
+        document.getElementById('formEliminarProducto').action = `/productos/eliminar/${productoId}/`;
+    }
+</script>
+
+{% endblock %}

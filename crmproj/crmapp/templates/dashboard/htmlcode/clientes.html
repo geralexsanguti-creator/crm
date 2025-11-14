@@ -1,0 +1,283 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block dashboard_content %}
+<section class="p-6 bg-base-100 min-h-screen">
+    <!-- Cards Superiores -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Card 1: Total Clientes -->
+        <div class="card bg-primary text-primary-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Total Clientes</h2>
+                        <p class="text-3xl font-bold">{{ total_clientes }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        👥
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Registrados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Clientes Nuevos -->
+        <div class="card bg-info text-info-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Clientes Nuevos</h2>
+                        <p class="text-3xl font-bold">{{ clientes_nuevos }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        🆕
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Este mes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Clientes Recurrentes -->
+        <div class="card bg-success text-success-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Recurrentes</h2>
+                        <p class="text-3xl font-bold">{{ clientes_recurrentes }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        🔄
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Fidelizados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Tasa Promedio -->
+        <div class="card bg-warning text-warning-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Comisión Prom.</h2>
+                        <p class="text-3xl font-bold">5.2%</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        💰
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Promedio</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Búsqueda y Filtros -->
+    <div class="bg-base-200 rounded-2xl p-6 mb-8 shadow-lg">
+        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <!-- Barra de Búsqueda -->
+            <div class="flex-1 w-full lg:w-auto">
+                <form method="GET" class="flex gap-2">
+                    <div class="join flex-1">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            placeholder="Buscar clientes..." 
+                            class="input input-bordered join-item flex-1"
+                            value="{{ request.GET.q }}"
+                        >
+                        <button type="submit" class="btn btn-primary join-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filtros y Acciones -->
+            <div class="flex gap-2 flex-wrap justify-center">
+                <button class="btn btn-outline btn-success" onclick="abrirModalAgregarCliente()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nuevo Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Clientes -->
+    <div class="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <thead class="bg-base-200">
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Contacto</th>
+                        <th>Tipo</th>
+                        <th>Contrato</th>
+                        <th>Comisión</th>
+                        <th>Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr id="fila-cliente-{{ cliente.id }}">
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar placeholder">
+                                    <div class="bg-neutral text-neutral-content rounded-full w-12">
+                                        <span class="text-lg">{{ cliente.nombre|first|upper }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ cliente.nombre }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-sm">
+                                {% if cliente.email %}
+                                <div class="flex items-center gap-1">
+                                    <span>📧</span>
+                                    <span>{{ cliente.email }}</span>
+                                </div>
+                                {% endif %}
+                                {% if cliente.telefono %}
+                                <div class="flex items-center gap-1">
+                                    <span>📞</span>
+                                    <span>{{ cliente.telefono }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if cliente.tipo == 'nuevo' %}
+                            <span class="badge badge-info">Nuevo</span>
+                            {% else %}
+                            <span class="badge badge-success">Recurrente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="text-sm">{{ cliente.tipo_contrato|default:"Sin contrato" }}</span>
+                        </td>
+                        <td>
+                            <span class="font-mono">{{ cliente.tasa_comision }}%</span>
+                        </td>
+                        <td>
+                            <div class="text-xs text-gray-500">
+                                {{ cliente.creado_en|date:"d/m/Y" }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <!-- Botón Editar -->
+                                <button onclick="abrirModalEditarCliente({{ cliente.id }})" 
+                                        class="btn btn-ghost btn-xs btn-info tooltip" 
+                                        data-tip="Editar">
+                                    ✏️
+                                </button>
+                                
+                                <!-- Botón Eliminar -->
+                                <button onclick="abrirModalEliminarCliente({{ cliente.id }}, '{{ cliente.nombre|escapejs }}')" 
+                                        class="btn btn-ghost btn-xs btn-error tooltip" 
+                                        data-tip="Eliminar">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl">👥</span>
+                                <p class="text-lg">No se encontraron clientes</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        {% if clientes.has_other_pages %}
+        <div class="flex justify-center p-6 bg-base-200">
+            <div class="join">
+                {% if clientes.has_previous %}
+                <a href="?page={{ clientes.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                   class="join-item btn">«</a>
+                {% endif %}
+                
+                {% for i in clientes.paginator.page_range %}
+                    {% if clientes.number == i %}
+                    <a class="join-item btn btn-active">{{ i }}</a>
+                    {% else %}
+                    <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                       class="join-item btn">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if clientes.has_next %}
+                <a href="?page={{ clientes.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                   class="join-item btn">»</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Incluir los modales -->
+{% include 'partials/clientes-modales/modal-agregar-cliente.html' %}
+{% include 'partials/clientes-modales/modal-editar-cliente.html' %}
+{% include 'partials/clientes-modales/modal-eliminar-cliente.html' %}
+
+<!-- Script Global para Clientes -->
+<script>
+// Función para eliminar fila de cliente
+function eliminarFilaCliente(clienteId) {
+    const fila = document.getElementById(`fila-cliente-${clienteId}`);
+    if (fila) {
+        fila.style.opacity = '0';
+        fila.style.transform = 'translateX(-100%)';
+        setTimeout(() => {
+            fila.remove();
+            // Si no quedan clientes, mostrar mensaje
+            const tbody = document.querySelector('tbody');
+            if (tbody && tbody.children.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl">👥</span>
+                                <p class="text-lg">No se encontraron clientes</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }, 300);
+    }
+}
+</script>
+
+<style>
+/* Transiciones suaves */
+tr {
+    transition: all 0.3s ease-in-out;
+}
+</style>
+{% endblock %}

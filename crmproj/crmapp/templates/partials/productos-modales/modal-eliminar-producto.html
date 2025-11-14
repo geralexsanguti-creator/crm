@@ -1,0 +1,29 @@
+<dialog id="modalEliminarProducto" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Confirmar Eliminación</h3>
+        <p class="py-4" id="mensajeEliminacion">¿Estás seguro de que deseas eliminar este producto?</p>
+        
+        <form method="POST" action="{% url 'eliminar_producto' %}">
+            {% csrf_token %}
+            <input type="hidden" id="productoIdEliminar" name="producto_id">
+            
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalEliminar()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-error">Sí, Eliminar</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<script>
+function abrirModalEliminar(productoId, productoNombre) {
+    document.getElementById('productoIdEliminar').value = productoId;
+    document.getElementById('mensajeEliminacion').textContent = 
+        `¿Estás seguro de que deseas eliminar el producto "${productoNombre}"?`;
+    document.getElementById('modalEliminarProducto').showModal();
+}
+
+function cerrarModalEliminar() {
+    document.getElementById('modalEliminarProducto').close();
+}
+</script>

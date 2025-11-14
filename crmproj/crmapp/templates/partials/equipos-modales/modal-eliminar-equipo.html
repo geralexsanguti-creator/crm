@@ -1,0 +1,14 @@
+<dialog id="modalEliminarEquipo" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Eliminar Equipo</h3>
+    <p>¿Está seguro de que desea eliminar el equipo "<span id="equipoNombreEliminar"></span>"?</p>
+    <p class="text-sm text-error mt-2">Esta acción no se puede deshacer.</p>
+    <form id="formEliminarEquipo" method="post">
+      {% csrf_token %}
+      <div class="modal-action">
+        <button type="submit" class="btn btn-error">Eliminar</button>
+        <button type="button" class="btn" onclick="modalEliminarEquipo.close()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</dialog>

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Crear Nuevo Cliente</h2>
+        <p class="mt-2 text-sm text-gray-600">Complete la información del cliente. Los campos marcados con * son obligatorios.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Campo Nombre del Cliente -->
+            <div>
+                <label for="{{ form.nombre_cliente.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                    {{ form.nombre_cliente.label }} *
+                </label>
+                {{ form.nombre_cliente }}
+                {% if form.nombre_cliente.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">{{ form.nombre_cliente.help_text }}</p>
+                {% endif %}
+                {% if form.nombre_cliente.errors %}
+                    <div class="mt-2 flex items-center text-sm text-red-600">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ form.nombre_cliente.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Campos en grid para email y teléfono -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Campo Email -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                        {{ form.email.label }}
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.email.help_text }}</p>
+                    {% endif %}
+                    {% if form.email.errors %}
+                        <div class="mt-2 flex items-center text-sm text-red-600">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ form.email.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Campo Teléfono -->
+                <div>
+                    <label for="{{ form.telefono.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                        {{ form.telefono.label }}
+                    </label>
+                    {{ form.telefono }}
+                    {% if form.telefono.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.telefono.help_text }}</p>
+                    {% endif %}
+                    {% if form.telefono.errors %}
+                        <div class="mt-2 flex items-center text-sm text-red-600">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ form.telefono.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Campo Dirección -->
+            <div>
+                <label for="{{ form.direccion.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                    {{ form.direccion.label }}
+                </label>
+                {{ form.direccion }}
+                {% if form.direccion.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">{{ form.direccion.help_text }}</p>
+                {% endif %}
+                {% if form.direccion.errors %}
+                    <div class="mt-2 flex items-center text-sm text-red-600">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ form.direccion.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                <a href="{% url 'lista_clientes' %}" class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Guardar Cliente
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

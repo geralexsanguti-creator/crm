@@ -1,0 +1,149 @@
+<dialog id="modalEliminarEmpresa" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalEliminarEmpresa()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-lg">Confirmar Eliminación</h3>
+        
+        <div class="py-4">
+            <div class="alert alert-warning mb-4">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <label>Esta acción no se puede deshacer</label>
+                </div>
+            </div>
+            
+            <p class="text-gray-700" id="mensajeEliminacion">
+                ¿Estás seguro de que deseas eliminar esta empresa?
+            </p>
+            
+            <!-- Información de la empresa a eliminar -->
+            <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="nombreEmpresaEliminar">-</h4>
+                        <p class="text-sm text-gray-600" id="infoEmpresaEliminar">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advertencia si tiene productos asociados -->
+            <div id="advertenciaProductos" class="mt-3 hidden">
+                <div class="alert alert-error">
+                    <div class="flex-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-semibold">¡Advertencia!</p>
+                            <p class="text-sm">Esta empresa tiene <span id="cantidadProductos" class="font-bold">0</span> producto(s) asociado(s).</p>
+                            <p class="text-sm">Al eliminar la empresa, también se eliminarán todos sus productos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de eliminación -->
+        <form method="POST" action="{% url 'eliminar_empresa' %}" id="formEliminarEmpresa">
+            {% csrf_token %}
+            <input type="hidden" id="empresaIdEliminar" name="empresa_id">
+        </form>
+
+        <!-- Mostrar mensajes de Django -->
+        {% if messages %}
+            <div class="space-y-2 mb-4">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                        <div class="flex-1">
+                            {% if message.tags == 'error' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                                </svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">        
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>                      
+                                </svg>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="modal-action">
+            <button type="button" onclick="cerrarModalEliminarEmpresa()" class="btn btn-ghost">Cancelar</button>
+            <button type="button" onclick="confirmarEliminacionEmpresa()" class="btn btn-error">
+                Sí, Eliminar Empresa
+            </button>
+        </div>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalEliminarEmpresa()">close</button>
+    </form>
+</dialog>
+
+<script>
+function abrirModalEliminarEmpresa(empresaId, nombreEmpresa, comision, email, totalProductos = 0) {
+    // Llenar los datos en el modal
+    document.getElementById('empresaIdEliminar').value = empresaId;
+    document.getElementById('nombreEmpresaEliminar').textContent = nombreEmpresa;
+    document.getElementById('infoEmpresaEliminar').textContent = `${comision}% comisión • ${email}`;
+    
+    // Actualizar mensaje principal
+    const mensaje = document.getElementById('mensajeEliminacion');
+    mensaje.textContent = `¿Estás seguro de que deseas eliminar la empresa "${nombreEmpresa}"?`;
+    
+    // Mostrar advertencia si tiene productos
+    const advertencia = document.getElementById('advertenciaProductos');
+    const cantidadProductos = document.getElementById('cantidadProductos');
+    
+    if (totalProductos > 0) {
+        cantidadProductos.textContent = totalProductos;
+        advertencia.classList.remove('hidden');
+    } else {
+        advertencia.classList.add('hidden');
+    }
+    
+    // Mostrar el modal
+    document.getElementById('modalEliminarEmpresa').showModal();
+}
+
+function cerrarModalEliminarEmpresa() {
+    document.getElementById('modalEliminarEmpresa').close();
+}
+
+function confirmarEliminacionEmpresa() {
+    // Enviar el formulario de forma tradicional
+    document.getElementById('formEliminarEmpresa').submit();
+}
+
+// Cerrar modal con ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalEliminarEmpresa();
+    }
+});
+
+// Prevenir envío accidental con Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formEliminarEmpresa');
+    if (form) {
+        form.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>

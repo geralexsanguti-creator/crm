@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Roles{% endblock %}
+{% block content %}
+<h1>Roles</h1>
+<section class="bg-gradient-to-br from-slate-100 to-blue-50 text-base-content min-h-screen">
+    <div class="container mx-auto p-6 max-w-3xl">
+        <h1 class="text-3xl font-bold mb-6">Crear Nuevo Rol</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="card bg-base-100 shadow-xl p-6">
+            {% csrf_token %}
+            
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Nombre del Rol</span>
+                </label>
+                {{ form.role_name }}
+                {% if form.role_name.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ form.role_name.errors }}</span>
+                    </label>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {% for field in form %}
+                    {% if field.name != 'role_name' %}
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">{{ field.label }}</span>
+                            </label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <label class="label">
+                                    <span class="label-text-alt text-error">{{ field.errors }}</span>
+                                </label>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">Crear Rol</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Usuarios{% endblock %}
+{% block content %}
+<h1>Usuarios</h1>
+<section class="bg-base-100 text-base-content">
+    <div class="container mx-auto p-6 max-w-2xl">
+        <h1 class="text-3xl font-bold mb-6">Crear Nuevo Usuario</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="card bg-base-100 shadow-xl p-6">
+            {% csrf_token %}
+            
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Nombre de Usuario</span>
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ form.username.errors }}</span>
+                    </label>
+                {% endif %}
+            </div>
+
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Contraseña</span>
+                </label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ form.password.errors }}</span>
+                    </label>
+                {% endif %}
+            </div>
+
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Confirmar Contraseña</span>
+                </label>
+                {{ form.confirm_password }}
+                {% if form.confirm_password.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ form.confirm_password.errors }}</span>
+                    </label>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">Crear Usuario</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

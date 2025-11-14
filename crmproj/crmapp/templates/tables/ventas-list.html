@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+
+{% block title %}Ventas{% endblock %}
+{% block content %}
+<h1>Ventas</h1>
+
+<section class="ventas">
+    <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Gestión de Ventas</h2>
+                <p class="mt-2 text-sm text-gray-600">Administre el historial de ventas de su organización.</p>
+            </div>
+            
+             <button class="btn btn-outline btn-success px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200" onclick="modalAgregarVenta.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nueva Venta
+             </button>
+
+            {% include 'partials/ventas-modales/modal-agregar-venta.html' %}
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Ventas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_ventas }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-green-100">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Ingresos Totales</p>
+                    <p class="text-2xl font-bold text-gray-900">${{ ingresos_totales|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-purple-100">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Clientes Activos</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_clientes }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-orange-100">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Ventas Hoy</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ ventas_hoy }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Filtro por Estado -->
+            <div>
+                <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                <select id="estado" name="estado" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                    <option value="">Todos los estados</option>
+                    <option value="Prospecto">Prospecto</option>
+                    <option value="Contratado">Contratado</option>
+                    <option value="En Instalación">En Instalación</option>
+                    <option value="Finalizado">Finalizado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </div>
+            
+            <!-- Filtro por Monto Mínimo -->
+            <div>
+                <label for="monto_min" class="block text-sm font-medium text-gray-700 mb-1">Monto Mínimo</label>
+                <div class="relative">
+                    <input type="number" id="monto_min" name="monto_min" placeholder="0" step="0.01" min="0" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">$</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtro por Monto Máximo -->
+            <div>
+                <label for="monto_max" class="block text-sm font-medium text-gray-700 mb-1">Monto Máximo</label>
+                <div class="relative">
+                    <input type="number" id="monto_max" name="monto_max" placeholder="100000" step="0.01" min="0" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">$</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtro por Fecha -->
+            <div>
+                <label for="fecha" class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                <input type="date" id="fecha" name="fecha" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+            </div>
+            
+            <div class="flex items-end space-x-4">
+                <button type="submit" class="w-full px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'lista_ventas' %}" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 text-center">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Ventas -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <!-- Tabla de Ventas -->
+    <div class="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <!-- head -->
+                <thead class="bg-base-200">
+                    <tr>
+                        <th>ID Venta</th>
+                        <th>Producto</th>
+                        <th>Cliente</th>
+                        <th>Vendedor</th>
+                        <th>Fecha Inicio</th>
+                        <th>Estado</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono">#{{ venta.venta_id }}</span>
+                            </div>
+                        </td>
+                       
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ venta.producto.nombre_producto }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ venta.cliente.nombre_cliente }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ venta.usuario.username }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ venta.fecha_inicio|date:"d/m/Y" }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="badge 
+                                    {% if venta.estado == 'Finalizado' %}badge-success
+                                    {% elif venta.estado == 'Cancelado' %}badge-error
+                                    {% elif venta.estado == 'Contratado' %}badge-primary
+                                    {% elif venta.estado == 'En Instalación' %}badge-warning
+                                    {% else %}badge-info{% endif %}">
+                                    {{ venta.estado }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold">${{ venta.monto_venta }}</span>
+                            </div>
+                        </td>
+                        
+                        <td>                            
+                            <div class="flex gap-2">
+                                <!-- Botón Editar -->
+                                 
+                                <button onclick="abrirModalEditarVenta('{{ venta.venta_id }}', 
+                                                                `{{ venta.producto.producto_id }}`, 
+                                                                `{{ venta.cliente.cliente_id }}`, 
+                                                                `{{ venta.usuario.user_id }}`, 
+                                                                `{{ venta.fecha_inicio|date:'Y-m-d'}}`, 
+                                                                `{{ venta.fecha_fin|date:'Y-m-d'|default:'' }}`, 
+                                                                `{{ venta.estado }}`, 
+                                                                `{{ venta.monto_venta }}`)" 
+                                        class="btn btn-ghost btn-xs btn-info tooltip" 
+                                        data-tip="Editar">
+                                    ✏️
+                                </button>
+                                
+                                <!-- Botón Eliminar -->
+                                
+                                <button onclick="abrirModalEliminarVenta('{{ venta.venta_id }}', 
+                            '{{ venta.cliente.nombre_cliente }} - {{ venta.producto.nombre_producto }}',
+                            '{{ venta.monto_venta }}',
+                            '{{ venta.estado }}')" 
+                                        class="btn btn-ghost btn-xs btn-error tooltip" 
+                                        data-tip="Eliminar">
+                                    🗑️
+                                </button>
+
+                                <!-- Botón Detalles -->
+                                <button onclick="abrirModalDetalleVenta('{{ venta.venta_id }}')" 
+                                        class="btn btn-ghost btn-xs btn-primary tooltip" 
+                                        data-tip="Ver Detalles">
+                                    👁️
+                                </button>
+                            </div>                            
+                            
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl">💰</span>
+                                <p class="text-lg">No se encontraron ventas</p>
+                                <button class="btn btn-primary mt-2" onclick="modalAgregarVenta.showModal()">Agregar Primera Venta</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        {% if ventas.has_other_pages %}
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Mostrando {{ ventas.start_index }} a {{ ventas.end_index }} de {{ ventas.paginator.count }} resultados
+            </div>
+            <div class="flex space-x-2">
+                {% if ventas.has_previous %}
+                <a href="?page={{ ventas.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Anterior
+                </a>
+                {% endif %}
+                
+                {% for num in ventas.paginator.page_range %}
+                    {% if ventas.number == num %}
+                    <span class="px-3 py-1 border border-green-500 bg-green-500 text-white rounded-md text-sm font-medium">
+                        {{ num }}
+                    </span>
+                    {% else %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if ventas.has_next %}
+                <a href="?page={{ ventas.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Siguiente
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+</section>
+
+<!-- Incluir modales -->
+{% include 'partials/ventas-modales/modal-editar-venta.html' %}
+{% include 'partials/ventas-modales/modal-eliminar-venta.html' %}
+
+<script>
+function abrirModalEditarVenta(ventaId, productoId, clienteId, usuarioId, fechaInicio, fechaFin, estado, monto) {
+    console.log('Abrir edición venta:', ventaId, productoId, clienteId, usuarioId, fechaInicio, fechaFin, estado, monto);
+    
+    // Llenar los campos del formulario
+    document.getElementById('ventaIdEditar').value = ventaId;
+    document.getElementById('productoEditar').value = productoId;
+    document.getElementById('clienteEditar').value = clienteId;
+    document.getElementById('usuarioEditar').value = usuarioId;
+    document.getElementById('fechaInicioEditar').value = fechaInicio;
+    document.getElementById('fechaFinEditar').value = fechaFin;
+    document.getElementById('estadoEditar').value = estado;
+    document.getElementById('montoVentaEditar').value = monto;
+    
+    // Actualizar información de la venta
+    document.getElementById('infoVentaId').textContent = '#' + ventaId;
+    document.getElementById('infoEstadoActual').textContent = estado;
+    
+    // Verificar si la venta es editable (no finalizada ni cancelada)
+    const alertaNoEditable = document.getElementById('alertaNoEditable');
+    const submitBtn = document.getElementById('submitEditarVenta');
+    
+    if (estado === 'Finalizado' || estado === 'Cancelado') {
+        alertaNoEditable.classList.remove('hidden');
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-disabled');
+    } else {
+        alertaNoEditable.classList.add('hidden');
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-disabled');
+    }
+    
+    // Disparar evento change en producto para actualizar información
+    const productoSelect = document.getElementById('productoEditar');
+    if (productoSelect) {
+        productoSelect.dispatchEvent(new Event('change'));
+    }
+    
+    // Abrir el modal
+    document.getElementById('modalEditarVenta').showModal();
+}
+
+function cerrarModalEditarVenta() {
+    document.getElementById('modalEditarVenta').close();
+}
+
+function abrirModalEliminarVenta(ventaId, ventaInfo, monto, estado) {
+    document.getElementById('ventaIdEliminar').value = ventaId;
+    document.getElementById('mensajeEliminacionVenta').textContent = 
+        `¿Estás seguro de que deseas eliminar la venta "${ventaInfo}" por $${monto} (Estado: ${estado})?`;
+    document.getElementById('modalEliminarVenta').showModal();
+}
+
+function abrirModalDetalleVenta(ventaId) {
+    console.log('Abrir detalles venta:', ventaId);
+    // Lógica para abrir modal de detalles
+}
+</script>
+
+
+{% endblock %}

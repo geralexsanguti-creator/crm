@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Registrar Nueva Venta</h2>
+        <p class="mt-2 text-sm text-gray-600">Complete toda la información relacionada con la venta. Los campos marcados con * son obligatorios.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Sección Información Principal -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Columna Izquierda -->
+                <div class="space-y-6">
+                    <!-- Producto -->
+                    <div>
+                        <label for="{{ form.producto.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.producto.label }} *
+                        </label>
+                        {{ form.producto }}
+                        {% if form.producto.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.producto.help_text }}</p>
+                        {% endif %}
+                        {% if form.producto.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.producto.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Cliente -->
+                    <div>
+                        <label for="{{ form.cliente.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.cliente.label }} *
+                        </label>
+                        {{ form.cliente }}
+                        {% if form.cliente.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.cliente.help_text }}</p>
+                        {% endif %}
+                        {% if form.cliente.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.cliente.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Usuario -->
+                    <div>
+                        <label for="{{ form.usuario.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.usuario.label }} *
+                        </label>
+                        {{ form.usuario }}
+                        {% if form.usuario.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.usuario.help_text }}</p>
+                        {% endif %}
+                        {% if form.usuario.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.usuario.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-6">
+                    <!-- Fechas -->
+                    <div class="grid grid-cols-1 gap-4">
+                        <!-- Fecha Inicio -->
+                        <div>
+                            <label for="{{ form.fecha_inicio.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                                {{ form.fecha_inicio.label }} *
+                            </label>
+                            {{ form.fecha_inicio }}
+                            {% if form.fecha_inicio.help_text %}
+                                <p class="mt-2 text-sm text-gray-500">{{ form.fecha_inicio.help_text }}</p>
+                            {% endif %}
+                            {% if form.fecha_inicio.errors %}
+                                <div class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ form.fecha_inicio.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Fecha Fin -->
+                        <div>
+                            <label for="{{ form.fecha_fin.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                                {{ form.fecha_fin.label }}
+                            </label>
+                            {{ form.fecha_fin }}
+                            {% if form.fecha_fin.help_text %}
+                                <p class="mt-2 text-sm text-gray-500">{{ form.fecha_fin.help_text }}</p>
+                            {% endif %}
+                            {% if form.fecha_fin.errors %}
+                                <div class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ form.fecha_fin.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div>
+                        <label for="{{ form.estado.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.estado.label }} *
+                        </label>
+                        {{ form.estado }}
+                        {% if form.estado.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.estado.help_text }}</p>
+                        {% endif %}
+                        {% if form.estado.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.estado.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Monto Venta -->
+                    <div>
+                        <label for="{{ form.monto_venta.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.monto_venta.label }} *
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            {{ form.monto_venta }}
+                        </div>
+                        {% if form.monto_venta.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.monto_venta.help_text }}</p>
+                        {% endif %}
+                        {% if form.monto_venta.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.monto_venta.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                <a href="{% url 'lista_ventas' %}" class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Registrar Venta
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Script para manejar la validación de fechas en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaInicio = document.getElementById('{{ form.fecha_inicio.id_for_label }}');
+    const fechaFin = document.getElementById('{{ form.fecha_fin.id_for_label }}');
+    
+    if (fechaInicio && fechaFin) {
+        fechaInicio.addEventListener('change', function() {
+            // Establecer fecha mínima para fecha_fin basada en fecha_inicio
+            if (this.value) {
+                fechaFin.min = this.value;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

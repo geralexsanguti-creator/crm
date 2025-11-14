@@ -1,0 +1,107 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% load static %}
+
+{% block dashboard_content %}
+<h2 class="text-3xl font-bold text-gray-800 mb-6 border-b-2 border-gray-400 pb-2">Dashboard</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    {% if permissions.productos > 0 %}
+    <a href="{% url 'lista_productos' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Productos
+    <div class="flex flex-col items-center text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gem-icon text-blue-700 lucide-gem"><path d="M10.5 3 8 9l4 13 4-13-2.5-6"/><path d="M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z"/><path d="M2 9h20"/></svg>
+            <h3 class="text-xl font-semibold text-gray-800">Gestión de Productos</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.productos == 1 %}Vista de el inventario de productos. {% else %}Lectura y escritura de productos{% endif %}</p>
+            
+        </div> 
+    </a>    
+    {% endif %}
+    
+ 
+    {% if permissions.clientes > 0 %}
+    <a href="{% url 'lista_clientes' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Clientes
+    <div class="flex flex-col items-center text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user-round-icon text-blue-700 lucide-circle-user-round"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></svg>
+            
+            <h3 class="text-xl font-semibold text-gray-800">Gestión de Clientes</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.clientes == 1 %}Vista de el inventario de clientes. {% else %}Lectura y escritura de clientes{% endif %}</p>
+
+        </div> 
+    </a>
+    {% endif %}
+
+    {% if permissions.ventas > 0 %}
+    <a href="{% url 'lista_ventas' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Ventas
+    <div class="flex flex-col items-center text-center">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon text-blue-700 lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+            <h3 class="text-xl font-semibold text-gray-800">Gestión de Ventas</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.ventas == 1 %}Vista de el inventario de ventas. {% else %}Lectura y escritura de ventas{% endif %}</p>
+
+        </div> 
+    </a>
+    {% endif %}
+
+    {% if permissions.empresas > 0 %}
+    <a href="{% url 'lista_empresas' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Empresas
+    <div class="flex flex-col items-center text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-icon lucide-package  text-blue-700"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+            
+            <h3 class="text-xl font-semibold text-gray-800">Gestion de Empresas</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.empresas == 1 %}Inventario de empresas. {% else %}Lectura y escritura de empresas{% endif %}</p>
+
+        </div> 
+    </a>
+    {% endif %}
+
+    {% if permissions.reglas_comisiones > 0 %}
+    <a href="{% url 'lista_reglas_comisiones' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Regla de Comisiones
+    <div class="flex flex-col items-center text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-icon lucide-package  text-blue-700"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+            
+            <h3 class="text-xl font-semibold text-gray-800">Gestion de Reglas de Comisiones</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.regla_comisiones == 1 %}Inventario de reglas de comisiones. {% else %}Lectura y escritura de regla de comisiones{% endif %}</p>
+
+        </div> 
+    </a>
+    {% endif %}
+   
+
+    {% if permissions.comisiones > 0 %}
+    <a href="{% url 'lista_comisiones' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Comisiones
+    <div class="flex flex-col items-center text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-icon lucide-package  text-blue-700"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+            
+            <h3 class="text-xl font-semibold text-gray-800">Gestion de Comisiones</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.comisiones == 1 %}Inventario de comisiones. {% else %}Lectura y escritura de comisiones{% endif %}</p>
+
+        </div> 
+    </a>
+    {% endif %}
+
+     {% if permissions.equipos > 0 %}
+    <a href="{% url 'lista_equipos' %}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">Ir a Equipos
+    <div class="flex flex-col items-center text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package-icon lucide-package  text-blue-700"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+            
+            <h3 class="text-xl font-semibold text-gray-800">Gestion de Equipos</h3>
+            <p class="text-gray-600 text-sm mt-1">  {% if permissions.equipos == 1 %}Inventario de equipos. {% else %}Lectura y escritura de equipos{% endif %}</p>
+
+        </div> 
+    </a>
+    {% endif %}
+  
+    {% if permissions.comisiones == 0 and permissions.clientes == 0 and permissions.ventas == 0 and permissions.usuarios == 0 %}
+    <div style="border: 1px solid #000; padding: 100px; width: 200px;" class="bg-white p-6 rounded-lg shadow-md w-64">
+        <h3 class="text-lg font-semibold mb-4">No tiene ningun permiso asignado</h3>
+        <p class="text-red-600">No tiene permisos asignados para acceder a ninguna sección del sistema.
+            contacte con el administrador.</p>
+        </p>
+        <a href="{% url 'login' %}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">Ir a Login</a>
+    </div>
+ {% endif %}
+</div>
+
+
+
+{% endblock %}

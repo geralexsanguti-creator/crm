@@ -1,0 +1,103 @@
+<dialog id="modalAgregarProducto" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Agregar Nuevo Producto</h3>
+        
+        <form id="formAgregarProducto" method="POST" action="{% url 'crear_producto' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre del Producto *</span>
+                        </label>
+                        <input type="text" 
+                               name="nombre_producto" 
+                               class="input input-bordered w-full {% if form.nombre_producto.errors %}input-error{% endif %}"
+                               placeholder="Nombre del producto"
+                               value="{{ form.nombre_producto.value|default:'' }}"
+                               required>
+                        {% if form.nombre_producto.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.nombre_producto.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Precio Base -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Precio Base *</span>
+                        </label>
+                        <input type="number" 
+                               name="precio_base" 
+                               step="0.01" 
+                               min="0" 
+                               class="input input-bordered w-full {% if form.precio_base.errors %}input-error{% endif %}"
+                               placeholder="0.00"
+                               value="{{ form.precio_base.value|default:'' }}"
+                               required>
+                        {% if form.precio_base.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.precio_base.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Empresa  -->
+                    <div class="form-control">
+    <label class="label">
+        <span class="label-text font-semibold">Empresa *</span>
+    </label>
+    <select name="empresa" class="select select-bordered w-full" required>
+        <option value="">Selecciona una empresa</option>
+        {% for empresa in empresas %}
+            <option value="{{ empresa.empresa_id }}">
+                {{ empresa.nombre_empresa }}
+            </option>
+        {% endfor %}
+    </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Descripción</span>
+                </label>
+                <textarea name="descripcion" 
+                          rows="4" 
+                          class="textarea textarea-bordered w-full {% if form.descripcion.errors %}textarea-error{% endif %}"
+                          placeholder="Descripción detallada del producto...">{{ form.descripcion.value|default:'' }}</textarea>
+                {% if form.descripcion.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {{ form.descripcion.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Mensajes de éxito/error -->
+            <div id="messagesAgregar" class="space-y-2"></div>
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalAgregar()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar Producto</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+

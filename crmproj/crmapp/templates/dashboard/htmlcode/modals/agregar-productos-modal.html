@@ -1,0 +1,271 @@
+    <dialog id="modal_agregar" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Agregar Nuevo Producto</h3>
+        
+        <!-- Añadir ID al formulario y quitar el action para usar AJAX -->
+        <form id="formAgregarProducto" method="POST" action="{% url 'agregar_producto' %}" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre del Producto *</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="nombre" 
+                            placeholder="Ingresa el nombre del producto" 
+                            class="input input-bordered w-full" 
+                            required
+                        >
+                    </div>
+
+                    <!-- Código del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Código del Producto</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="codigo" 
+                            placeholder="Código único del producto" 
+                            class="input input-bordered w-full"
+                        >
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Categoría *</span>
+                        </label>
+                        <select name="categoria" class="select select-bordered w-full" required>
+                            <option value="" disabled selected>Selecciona una categoría</option>
+                            <option value="electronico">Electrónicos</option>
+                            <option value="ropa">Ropa</option>
+                            <option value="hogar">Hogar</option>
+                            <option value="deportes">Deportes</option>
+                            <option value="libros">Libros</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Precio *</span>
+                        </label>
+                        <div class="join w-full">
+                            <span class="join-item btn btn-disabled">$</span>
+                            <input 
+                                type="number" 
+                                name="precio" 
+                                step="0.01" 
+                                min="0" 
+                                placeholder="0.00" 
+                                class="input input-bordered join-item w-full" 
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Stock -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Stock Inicial *</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            name="stock" 
+                            min="0" 
+                            value="0" 
+                            class="input input-bordered w-full" 
+                            required
+                        >
+                    </div>
+
+                    <!-- Stock Mínimo -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Stock Mínimo</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            name="stock_minimo" 
+                            min="0" 
+                            value="5" 
+                            class="input input-bordered w-full"
+                        >
+                    </div>
+
+                    <!-- Imagen del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Imagen del Producto</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            name="imagen" 
+                            class="file-input file-input-bordered w-full"
+                            accept="image/*"
+                        >
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" name="activo" class="toggle toggle-success" checked />
+                            <span class="label-text font-semibold">Producto Activo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Descripción del Producto</span>
+                </label>
+                <textarea 
+                    name="descripcion" 
+                    rows="3" 
+                    placeholder="Describe las características del producto..." 
+                    class="textarea textarea-bordered"
+                ></textarea>
+            </div>
+
+            <!-- Contenedor para mensajes dinámicos -->
+            <div id="messagesContainer" class="space-y-2"></div>
+
+            <!-- Botones de Acción -->
+            <div class="modal-action">
+                <button type="button" onclick="modal_agregar.close()" class="btn btn-ghost">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Guardar Producto
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Cerrar modal al hacer clic fuera -->
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener el formulario por su ID
+    const formAgregarProducto = document.getElementById('formAgregarProducto');
+    const messagesContainer = document.getElementById('messagesContainer');
+    
+    if (formAgregarProducto) {
+        formAgregarProducto.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Formulario enviado vía AJAX');
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Mostrar estado de carga
+            submitBtn.innerHTML = `
+                <span class="loading loading-spinner loading-sm"></span>
+                Guardando...
+            `;
+            submitBtn.disabled = true;
+            
+            // Limpiar mensajes anteriores
+            messagesContainer.innerHTML = '';
+            
+            // Enviar datos via AJAX
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    // No establecer Content-Type para FormData, el navegador lo hace automáticamente
+                }
+            })
+            .then(response => {
+                console.log('Respuesta recibida:', response);
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos:', data);
+                
+                if (data.success) {
+                    // Mostrar mensaje de éxito
+                    messagesContainer.innerHTML = `
+                        <div class="alert alert-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>${data.message}</span>
+                        </div>
+                    `;
+                    
+                    // Limpiar formulario
+                    form.reset();
+                    
+                    // Cerrar modal y recargar después de 2 segundos
+                    setTimeout(() => {
+                        modal_agregar.close();
+                        window.location.reload();
+                    }, 2000);
+                    
+                } else {
+                    // Mostrar errores de validación
+                    let errorsHtml = '<div class="alert alert-error">';
+                    if (data.errors) {
+                        for (const field in data.errors) {
+                            errorsHtml += `<p><strong>${field}:</strong> ${data.errors[field]}</p>`;
+                        }
+                    } else if (data.message) {
+                        errorsHtml += `<p>${data.message}</p>`;
+                    } else {
+                        errorsHtml += `<p>Error desconocido al guardar el producto</p>`;
+                    }
+                    errorsHtml += '</div>';
+                    messagesContainer.innerHTML = errorsHtml;
+                }
+            })
+            .catch(error => {
+                console.error('Error en la petición:', error);
+                messagesContainer.innerHTML = `
+                    <div class="alert alert-error">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Error de conexión: ${error.message}</span>
+                    </div>
+                `;
+            })
+            .finally(() => {
+                // Restaurar botón
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+    }
+});
+</script>

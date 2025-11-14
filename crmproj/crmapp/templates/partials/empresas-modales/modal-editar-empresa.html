@@ -1,0 +1,266 @@
+<dialog id="modalEditarEmpresa" class="modal">
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalEditarEmpresa()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Editar Empresa Socia</h3>
+        
+        <form method="POST" action="{% url 'editar_empresa' %}" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" id="empresaIdEditar" name="empresa_id">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre de la Empresa -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre de la Empresa *</span>
+                        </label>
+                        <input type="text" 
+                               id="nombreEmpresaEditar"
+                               name="nombre_empresa" 
+                               class="input input-bordered w-full {% if form.nombre_empresa.errors %}input-error{% endif %}"
+                               placeholder="Nombre de la empresa"
+                               value="{{ form.nombre_empresa.value|default:'' }}"
+                               required>
+                        {% if form.nombre_empresa.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.nombre_empresa.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Comisión Aplicable -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Comisión Aplicable (%) *</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" 
+                                   id="comisionEditar"
+                                   name="comision_aplicable" 
+                                   step="0.01" 
+                                   min="0" 
+                                   max="100" 
+                                   class="input input-bordered w-full {% if form.comision_aplicable.errors %}input-error{% endif %}"
+                                   placeholder="0.00"
+                                   value="{{ form.comision_aplicable.value|default:'' }}"
+                                   required>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">%</span>
+                            </div>
+                        </div>
+                        {% if form.comision_aplicable.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.comision_aplicable.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="label-text-alt text-gray-500 mt-1">
+                            Valor entre 0% y 100%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Email de Contacto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Email de Contacto *</span>
+                        </label>
+                        <input type="email" 
+                               id="emailEditar"
+                               name="contacto_email" 
+                               class="input input-bordered w-full {% if form.contacto_email.errors %}input-error{% endif %}"
+                               placeholder="contacto@empresa.com"
+                               value="{{ form.contacto_email.value|default:'' }}"
+                               required>
+                        {% if form.contacto_email.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.contacto_email.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Teléfono *</span>
+                        </label>
+                        <input type="tel" 
+                               id="telefonoEditar"
+                               name="telefono" 
+                               class="input input-bordered w-full {% if form.telefono.errors %}input-error{% endif %}"
+                               placeholder="+1 234 567 8900"
+                               value="{{ form.telefono.value|default:'' }}"
+                               required>
+                        {% if form.telefono.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.telefono.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Registro (solo lectura) -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h4 class="font-semibold text-gray-700 mb-2">Información de Registro</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">ID de Empresa:</span>
+                        <span id="infoEmpresaId" class="font-mono text-gray-800 ml-2">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Fecha de Registro:</span>
+                        <span id="infoFechaRegistro" class="text-gray-800 ml-2">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Total de Productos:</span>
+                        <span id="infoTotalProductos" class="text-gray-800 ml-2">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mostrar errores generales del formulario -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <div class="flex-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                        </svg> 
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Mostrar mensajes de Django -->
+            {% if messages %}
+                <div class="space-y-2">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                            <div class="flex-1">
+                                {% if message.tags == 'error' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                                    </svg>
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">        
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>                      
+                                    </svg>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalEditarEmpresa()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Actualizar Empresa</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalEditarEmpresa()">close</button>
+    </form>
+</dialog>
+
+
+<script>
+    function abrirModalEditarEquipo(equipoId, nombreEquipo, descripcion, fechaCreacion = '') {
+    console.log('Abriendo modal para equipo:', equipoId, nombreEquipo);
+    
+    // Llenar los campos del formulario con los datos del equipo
+    document.getElementById('equipoIdEditar').value = equipoId;
+    document.getElementById('nombreEquipoEditar').value = nombreEquipo;
+    document.getElementById('descripcionEditar').value = descripcion || '';
+    
+    // Llenar información de registro
+    document.getElementById('infoEquipoId').textContent = '#' + equipoId;
+    
+    // Formatear fecha si está disponible
+    if (fechaCreacion) {
+        const fecha = new Date(fechaCreacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('infoFechaCreacion').textContent = fechaFormateada;
+    } else {
+        document.getElementById('infoFechaCreacion').textContent = 'No disponible';
+    }
+    
+    // ESTABLECER LA ACCIÓN DEL FORMULARIO DINÁMICAMENTE
+    const form = document.getElementById('formEditarEquipo');
+    form.action = `/equipos/editar/${equipoId}/`;
+    
+    // Mostrar el modal
+    const modal = document.getElementById('modalEditarEquipo');
+    if (modal) {
+        modal.showModal();
+    } else {
+        console.error('Modal no encontrado');
+    }
+}
+
+function cerrarModalEditarEquipo() {
+    const modal = document.getElementById('modalEditarEquipo');
+    if (modal) {
+        modal.close();
+    }
+}
+
+// Validación del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formEditarEquipo');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const nombreInput = form.querySelector('[name="nombre_equipo"]');
+            const nombre = nombreInput.value.trim();
+            
+            // Validar nombre del equipo
+            if (!nombre) {
+                e.preventDefault();
+                alert('Por favor ingrese un nombre para el equipo');
+                nombreInput.focus();
+                return false;
+            }
+            
+            // Validar longitud del nombre
+            if (nombre.length > 100) {
+                e.preventDefault();
+                alert('El nombre del equipo no puede tener más de 100 caracteres');
+                nombreInput.focus();
+                return false;
+            }
+        });
+    }
+});
+
+// Cerrar modal con ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalEditarEquipo();
+    }
+});
+
+// Cerrar modal al hacer click fuera
+document.getElementById('modalEditarEquipo')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModalEditarEquipo();
+    }
+});
+</script>
+

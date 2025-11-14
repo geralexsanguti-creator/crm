@@ -1,0 +1,52 @@
+<dialog id="productor_modal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Formulario de Productores</h3>
+        
+        <form id="productorForm" method="post" action="{% url 'productor' %}" class="py-4">
+            {% csrf_token %}
+            
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">{{ contact_form.name.label }}</span>
+                </label>
+                {{ contact_form.name }}
+                {% if contact_form.name.errors %}
+                <div class="text-error text-sm mt-1">
+                    {{ contact_form.name.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">{{ contact_form.email.label }}</span>
+                </label>
+                {{ contact_form.email }}
+                {% if contact_form.email.errors %}
+                <div class="text-error text-sm mt-1">
+                    {{ contact_form.email.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">{{ contact_form.message.label }}</span>
+                </label>
+                {{ contact_form.message }}
+                {% if contact_form.message.errors %}
+                <div class="text-error text-sm mt-1">
+                    {{ contact_form.message.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div id="contactMessages" class="mb-4"></div>
+            
+            <div class="modal-action">
+                <button type="button" class="btn btn-outline" onclick="contact_modal.close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+            </div>
+        </form>
+    </div>
+</dialog>

@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de Ventas{% endblock %}
+
+{% block content %}
+<div x-data="ventaManager()">
+    <!-- Header y Estadísticas -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Gestión de Ventas</h1>
+            <button class="btn btn-primary" @click="abrirModalCrear()">
+                <i class="fas fa-plus mr-2"></i>
+                Nueva Venta
+            </button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="stats shadow bg-white">
+                <div class="stat">
+                    <div class="stat-figure text-primary">
+                        <i class="fas fa-dollar-sign text-2xl"></i>
+                    </div>
+                    <div class="stat-title">Total Ventas</div>
+                    <div class="stat-value text-primary">$124,560</div>
+                    <div class="stat-desc">+15% vs mes anterior</div>
+                </div>
+            </div>
+            
+            <div class="stats shadow bg-white">
+                <div class="stat">
+                    <div class="stat-figure text-success">
+                        <i class="fas fa-calendar-check text-2xl"></i>
+                    </div>
+                    <div class="stat-title">Ventas del Mes</div>
+                    <div class="stat-value text-success">$42,380</div>
+                    <div class="stat-desc">+8% vs mes anterior</div>
+                </div>
+            </div>
+            
+            <div class="stats shadow bg-white">
+                <div class="stat">
+                    <div class="stat-figure text-warning">
+                        <i class="fas fa-tools text-2xl"></i>
+                    </div>
+                    <div class="stat-title">En Instalación</div>
+                    <div class="stat-value text-warning">8</div>
+                    <div class="stat-desc">2 pendientes de inicio</div>
+                </div>
+            </div>
+            
+            <div class="stats shadow bg-white">
+                <div class="stat">
+                    <div class="stat-figure text-info">
+                        <i class="fas fa-user-clock text-2xl"></i>
+                    </div>
+                    <div class="stat-title">Prospectos</div>
+                    <div class="stat-value text-info">15</div>
+                    <div class="stat-desc">5 en negociación</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card bg-white shadow-lg mb-6">
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Buscar</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" x-model="filtroBusqueda" placeholder="Buscar ventas..." 
+                               class="input input-bordered w-full pl-10">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Estado</span>
+                    </label>
+                    <select class="select select-bordered w-full" x-model="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="Prospecto">Prospecto</option>
+                        <option value="Contratado">Contratado</option>
+                        <option value="En Instalación">En Instalación</option>
+                        <option value="Finalizado">Finalizado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Fecha</span>
+                    </label>
+                    <input type="month" class="input input-bordered w-full" x-model="filtroFecha">
+                </div>
+                
+                <div class="form-control flex justify-end">
+                    <label class="label">
+                        <span class="label-text invisible">Reset</span>
+                    </label>
+                    <button class="btn btn-outline w-full" @click="limpiarFiltros()">
+                        <i class="fas fa-redo mr-2"></i>
+                        Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Ventas -->
+    <div class="card bg-white shadow-lg">
+        <div class="card-body">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="card-title">Lista de Ventas</h2>
+                <div class="flex space-x-2">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-download mr-2"></i>
+                        Exportar
+                    </button>
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="btn btn-outline btn-sm">
+                            <i class="fas fa-columns mr-2"></i>
+                            Columnas
+                        </div>
+                        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li><a>ID Venta</a></li>
+                            <li><a>Producto</a></li>
+                            <li><a>Cliente</a></li>
+                            <li><a>Comercial</a></li>
+                            <li><a>Fechas</a></li>
+                            <li><a>Estado</a></li>
+                            <li><a>Monto</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Producto</th>
+                            <th>Cliente</th>
+                            <th>Comercial</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Estado</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                        <tr>
+                            <td class="font-semibold">#{{ venta.venta_id }}</td>
+                            <td>{{ venta.producto.nombre_producto }}</td>
+                            <td>{{ venta.cliente.nombre_cliente }}</td>
+                            <td>{{ venta.usuario.user.get_full_name }}</td>
+                            <td>{{ venta.fecha_inicio|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if venta.fecha_fin %}
+                                    {{ venta.fecha_fin|date:"d/m/Y" }}
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ venta.estado|lower|cut:' '|cut:'ó'|cut:'á' }}">
+                                    {{ venta.estado }}
+                                </span>
+                            </td>
+                            <td class="font-semibold">${{ venta.monto_venta }}</td>
+                            <td>
+                                <div class="flex space-x-2">
+                                    <button class="btn btn-ghost btn-xs" 
+                                            @click="verDetalles({{ venta.venta_id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-ghost btn-xs text-warning"
+                                            @click="editarVenta({{ venta.venta_id }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-ghost btn-xs text-error"
+                                            @click="eliminarVenta({{ venta.venta_id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <div class="flex justify-center mt-6">
+                <div class="join">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn">«</a>
+                    {% endif %}
+                    
+                    <span class="join-item btn btn-active">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="join-item btn">»</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Venta -->
+    {% include 'ventas/partials/modal_venta.html' %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function ventaManager() {
+        return {
+            filtroBusqueda: '',
+            filtroEstado: '',
+            filtroFecha: '',
+            modalAbierto: false,
+            modoEdicion: false,
+            ventaId: null,
+            
+            abrirModalCrear() {
+                this.modoEdicion = false;
+                this.ventaId = null;
+                this.limpiarFormulario();
+                document.getElementById('modal_venta').showModal();
+            },
+            
+            async editarVenta(id) {
+                try {
+                    const response = await fetch(`/ventas/${id}/detalle/`);
+                    const data = await response.json();
+                    
+                    // Llenar formulario con datos
+                    Object.keys(data).forEach(key => {
+                        const element = document.getElementById(`id_${key}`);
+                        if (element) {
+                            element.value = data[key];
+                        }
+                    });
+                    
+                    this.modoEdicion = true;
+                    this.ventaId = id;
+                    document.getElementById('modal_titulo').textContent = `Editar Venta #${id}`;
+                    document.getElementById('modal_venta').showModal();
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            },
+            
+            async guardarVenta() {
+                const form = document.getElementById('venta_form');
+                const formData = new FormData(form);
+                const url = this.modoEdicion ? `/ventas/${this.ventaId}/editar/` : '/ventas/crear/';
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Mostrar notificación de éxito
+                        this.mostrarNotificacion(result.message, 'success');
+                        document.getElementById('modal_venta').close();
+                        // Recargar la página para ver los cambios
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        // Mostrar errores
+                        this.mostrarErrores(result.errors);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.mostrarNotificacion('Error al guardar la venta', 'error');
+                }
+            },
+            
+            async eliminarVenta(id) {
+                if (confirm('¿Estás seguro de que deseas eliminar esta venta?')) {
+                    try {
+                        const response = await fetch(`/ventas/${id}/eliminar/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRFToken': csrftoken,
+                            }
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            this.mostrarNotificacion(result.message, 'success');
+                            setTimeout(() => window.location.reload(), 1000);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        this.mostrarNotificacion('Error al eliminar la venta', 'error');
+                    }
+                }
+            },
+            
+            mostrarNotificacion(mensaje, tipo) {
+                // Implementar notificación con DaisyUI toast
+                const toast = document.createElement('div');
+                toast.className = `toast toast-top toast-end`;
+                toast.innerHTML = `
+                    <div class="alert alert-${tipo === 'success' ? 'success' : 'error'}">
+                        <span>${mensaje}</span>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            },
+            
+            mostrarErrores(errors) {
+                // Limpiar errores anteriores
+                document.querySelectorAll('.error-message').forEach(el => el.remove());
+                document.querySelectorAll('.input-error').forEach(el => {
+                    el.classList.remove('input-error');
+                    el.classList.add('input-bordered');
+                });
+                
+                // Mostrar nuevos errores
+                Object.keys(errors).forEach(field => {
+                    const input = document.getElementById(`id_${field}`);
+                    if (input) {
+                        input.classList.remove('input-bordered');
+                        input.classList.add('input-error');
+                        
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message text-error text-sm mt-1';
+                        errorDiv.textContent = errors[field][0];
+                        input.parentNode.appendChild(errorDiv);
+                    }
+                });
+            },
+            
+            limpiarFormulario() {
+                document.getElementById('venta_form').reset();
+                document.getElementById('modal_titulo').textContent = 'Nueva Venta';
+                document.querySelectorAll('.error-message').forEach(el => el.remove());
+                document.querySelectorAll('.input-error').forEach(el => {
+                    el.classList.remove('input-error');
+                    el.classList.add('input-bordered');
+                });
+            },
+            
+            limpiarFiltros() {
+                this.filtroBusqueda = '';
+                this.filtroEstado = '';
+                this.filtroFecha = '';
+            }
+        }
+    }
+</script>
+{% endblock %}

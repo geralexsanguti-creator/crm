@@ -1,0 +1,48 @@
+<dialog id="modalEliminarComision" class="modal">
+    <div class="modal-box max-w-md">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Eliminar Comisión</h3>
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <p class="text-sm text-red-800 font-semibold mb-2">¿Está seguro que desea eliminar esta comisión?</p>
+                <p class="text-sm text-red-700" id="comisionInfoEliminar"></p>
+            </div>
+
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-yellow-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-yellow-800 font-medium">Esta acción no se puede deshacer</p>
+                        <p class="text-xs text-yellow-700 mt-1">La comisión será eliminada permanentemente del sistema.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" action="" id="formEliminarComision">
+                {% csrf_token %}
+                <div class="flex justify-center space-x-4 pt-4">
+                    <button type="button" onclick="document.getElementById('modalEliminarComision').close()" 
+                            class="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                        Sí, Eliminar Comisión
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</dialog>

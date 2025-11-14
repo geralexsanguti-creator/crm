@@ -1,0 +1,216 @@
+<dialog id="modalAgregarVenta" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalAgregarVenta()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Nueva Venta</h3>
+        
+        <form method="POST" action="{% url 'crear_venta' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Producto *</span>
+                        </label>
+                        <select name="producto" class="select select-bordered w-full" required>
+                            <option value="">Selecciona un producto</option>
+                            {% for producto in productos %}
+                            <option value="{{ producto.producto_id }}" 
+                                    data-precio="{{ producto.precio_base }}"
+                                    {% if form.producto.value|stringformat:"s" == producto.producto_id|stringformat:"s" %}selected{% endif %}>
+                                {{ producto.nombre_producto }} - ${{ producto.precio_base }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.producto.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.producto.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Cliente *</span>
+                        </label>
+                        <select name="cliente" class="select select-bordered w-full" required>
+                            <option value="">Selecciona un cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.cliente_id }}"
+                                    {% if form.cliente.value|stringformat:"s" == cliente.cliente_id|stringformat:"s" %}selected{% endif %}>
+                                {{ cliente.nombre_cliente }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.cliente.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.cliente.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Usuario/Vendedor -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Vendedor *</span>
+                        </label>
+                        <select name="usuario" class="select select-bordered w-full" required>
+                            <option value="">Selecciona un vendedor</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.user_id }}"
+                                    {% if form.usuario.value|stringformat:"s" == usuario.user_id|stringformat:"s" %}selected{% endif %}>
+                                {{ usuario.get_full_name|default:usuario.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.usuario.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.usuario.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Fecha Inicio -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Fecha Inicio *</span>
+                        </label>
+                        <input type="date" name="fecha_inicio" class="input input-bordered w-full" required
+                               value="{{ form.fecha_inicio.value|default:'' }}">
+                        {% if form.fecha_inicio.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.fecha_inicio.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fecha Fin -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Fecha Fin</span>
+                            <span class="label-text-alt text-gray-500">Opcional</span>
+                        </label>
+                        <input type="date" name="fecha_fin" class="input input-bordered w-full"
+                               value="{{ form.fecha_fin.value|default:'' }}">
+                        {% if form.fecha_fin.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.fecha_fin.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Estado *</span>
+                        </label>
+                        <select name="estado" class="select select-bordered w-full" required>
+                            {% for value, label in ESTADO_CHOICES %}
+                            <option value="{{ value }}"
+                                    {% if form.estado.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.estado.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.estado.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Monto Venta -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Monto Venta *</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" name="monto_venta" id="montoVenta" 
+                                   class="input input-bordered w-full" step="0.01" min="0" 
+                                   placeholder="0.00" required
+                                   value="{{ form.monto_venta.value|default:'' }}">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">$</span>
+                            </div>
+                        </div>
+                        {% if form.monto_venta.errors %}
+                        <div class="text-error text-xs mt-1">{{ form.monto_venta.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mostrar errores generales del formulario -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                    </svg>
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalAgregarVenta()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-success">Crear Venta</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalAgregarVenta()">close</button>
+    </form>
+</dialog>
+
+<!-- Script para auto-abrir modal cuando hay errores -->
+{% if form.errors %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    abrirModalAgregarVenta();
+});
+</script>
+{% endif %}
+
+<!-- Script principal -->
+<script>
+function abrirModalAgregarVenta() {
+    document.getElementById('modalAgregarVenta').showModal();
+}
+
+function cerrarModalAgregarVenta() {
+    document.getElementById('modalAgregarVenta').close();
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar monto cuando se selecciona producto
+    const productoSelect = document.querySelector('select[name="producto"]');
+    if (productoSelect) {
+        productoSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const precio = selectedOption.getAttribute('data-precio');
+            const montoInput = document.getElementById('montoVenta');
+            
+            if (precio && montoInput) {
+                montoInput.value = precio;
+            }
+        });
+    }
+    
+    // Validación de fechas
+    const fechaInicio = document.querySelector('input[name="fecha_inicio"]');
+    const fechaFin = document.querySelector('input[name="fecha_fin"]');
+    
+    if (fechaInicio && fechaFin) {
+        fechaFin.addEventListener('change', function() {
+            if (fechaInicio.value && fechaFin.value && fechaInicio.value > fechaFin.value) {
+                alert('La fecha de fin no puede ser anterior a la fecha de inicio');
+                fechaFin.value = '';
+            }
+        });
+    }
+});
+</script>

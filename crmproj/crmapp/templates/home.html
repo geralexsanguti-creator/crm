@@ -1,0 +1,57 @@
+{% extends 'base.html'%}
+{% load static %}
+{% block content %}
+
+ <section class="font-sans">
+    <div class="relative w-full h-screen overflow-hidden">
+        <!-- Fondo con blur -->
+        <div 
+            class="absolute inset-0 bg-cover bg-center z-0"
+            style="background-image: url('{% static 'img/analytics.png' %}');"
+        ></div>
+        
+        <!-- Capa de desenfoque -->
+        <div class="absolute inset-1/5 backdrop-blur-sm backdrop-brightness-110 z-10 rounded-lg border border-green-100"></div>
+        
+        <!-- Contenido -->
+        <div class="relative z-20 flex items-center justify-center h-full px-4">
+            <div class="text-center text-white max-w-2xl">
+                <div class="mb-8 flex justify-center">
+                    <img 
+                        src="{% static 'img/crmga.png' %}" 
+                        alt="Logo de la empresa" 
+                        class="h-40 w-40 md:h-52 md:w-52 p-5 rounded-full shadow-2xl border-4 border-blue-400/50 
+               brightness-50 sepia-100 hue-rotate-180 saturate-1000
+               backdrop-blur-lg bg-white/10 object-contain"
+                    >
+                </div>
+                <h1 class="sm:text-4xl md:text-5xl lg:text-6xl text-4xl font-bold mb-4 text-shadow-lg">
+                    Sistema de Gestión CRM Ventas
+                </h1>
+                <p class="text-lg md:text-xl mb-6 text-shadow">
+                    Soluciones integrales para Ud.
+                </p>
+                <a href="{% url 'login' %}">
+                    <button class="border-2 bg-blue-950 text-white font-medium py-2 px-6 rounded-md hover:bg-emerald-800 transition duration-200 shadow-lg hover:shadow-xl">
+                        Iniciemos
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    .text-shadow-lg {
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.6);
+    }
+</style>
+
+ 
+
+
+
+{% endblock content %}

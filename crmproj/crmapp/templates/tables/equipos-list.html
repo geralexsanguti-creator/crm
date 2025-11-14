@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+
+{% block title %}Equipos{% endblock %}
+{% block content %}
+<h1>Equipos</h1>
+
+<section class="equipos">
+    <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Gestión de Equipos</h2>
+                <p class="mt-2 text-sm text-gray-600">Administre los equipos de su organización.</p>
+            </div>
+            
+             <button class="btn btn-outline btn-success px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" onclick="modalAgregarEquipo.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nuevo Equipo
+             </button>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Equipos</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_equipos }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-green-100">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Creados Hoy</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ equipos_hoy }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-purple-100">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Con Descripción</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ equipos_con_descripcion }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Filtro por Nombre -->
+            <div>
+                <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Equipo</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Buscar por nombre..." value="{{ request.GET.nombre }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            
+            <!-- Filtro por Fecha -->
+            <div>
+                <label for="fecha" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Creación</label>
+                <input type="date" id="fecha" name="fecha" value="{{ request.GET.fecha }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex items-end space-x-4">
+                <button type="submit" class="w-full px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'lista_equipos' %}" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Equipos -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">Todos los Equipos</h3>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Buscar equipo..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grid de Equipos -->
+        <div class="p-6">
+            {% if equipos %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for equipo in equipos %}
+                <div class="bg-gray-50 rounded-lg border border-gray-200 p-6 hover:shadow-md transition duration-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div class="relative">
+                            <button type="button" class="text-gray-400 hover:text-gray-600 focus:outline-none" onclick="toggleMenu('menu-{{ equipo.equipo_id }}')">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                                </svg>
+                            </button>
+                            <div id="menu-{{ equipo.equipo_id }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                                <button type="button" 
+                                        onclick="abrirModalEditarEquipo(
+                                            '{{ equipo.equipo_id }}', 
+                                            `{{ equipo.nombre_equipo|escapejs }}`, 
+                                            `{{ equipo.descripcion|escapejs }}`
+                                        )" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Editar Equipo
+                                </button>
+                                
+                                <button type="button" 
+                                        onclick="abrirModalDetalleEquipo(
+                                            '{{ equipo.equipo_id }}', 
+                                            `{{ equipo.nombre_equipo|escapejs }}`, 
+                                            `{{ equipo.descripcion|escapejs }}`,
+                                            `{{ equipo.fecha_creacion|date:'d/m/Y H:i' }}`
+                                        )" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Ver Detalles
+                                </button>
+                                
+                                <button type="button" 
+                                        onclick="abrirModalEliminarEquipo(
+                                            '{{ equipo.equipo_id }}', 
+                                            '{{ equipo.nombre_equipo|escapejs }}'
+                                        )" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2 truncate">{{ equipo.nombre_equipo }}</h4>
+                    
+                    <div class="space-y-2 mb-4">
+                        {% if equipo.descripcion %}
+                        <div class="text-sm text-gray-600 line-clamp-3">
+                            {{ equipo.descripcion }}
+                        </div>
+                        {% else %}
+                        <div class="text-sm text-gray-400 italic">
+                            Sin descripción
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs text-gray-500">
+                            ID: #{{ equipo.equipo_id }}
+                        </span>
+                        <span class="text-xs text-gray-500">
+                            Creado: {{ equipo.fecha_creacion|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No hay equipos registrados</h3>
+                <p class="mt-2 text-sm text-gray-500">Comience agregando su primer equipo.</p>
+                <div class="mt-6">
+                    <button onclick="modalAgregarEquipo.showModal()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Agregar Primer Equipo
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Paginación -->
+        {% if equipos.has_other_pages %}
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Mostrando {{ equipos.start_index }} a {{ equipos.end_index }} de {{ equipos.paginator.count }} resultados
+            </div>
+            <div class="flex space-x-2">
+                {% if equipos.has_previous %}
+                <a href="?page={{ equipos.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Anterior
+                </a>
+                {% endif %}
+                
+                {% for num in equipos.paginator.page_range %}
+                    {% if equipos.number == num %}
+                    <span class="px-3 py-1 border border-blue-500 bg-blue-500 text-white rounded-md text-sm font-medium">
+                        {{ num }}
+                    </span>
+                    {% else %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if equipos.has_next %}
+                <a href="?page={{ equipos.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Siguiente
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+</section>
+
+<!-- Modales -->
+<!-- Modal Agregar Equipo -->
+<dialog id="modalAgregarEquipo" class="modal">
+  <div class="modal-box max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Agregar Nuevo Equipo</h3>
+    <form method="post" action="{% url 'agregar_equipo' %}">
+      {% csrf_token %}
+      <div class="space-y-4">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Nombre del Equipo *</span>
+          </label>
+          <input type="text" name="nombre_equipo" class="input input-bordered w-full" placeholder="Ingrese el nombre del equipo" required maxlength="100">
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Descripción</span>
+          </label>
+          <textarea name="descripcion" class="textarea textarea-bordered h-24" placeholder="Ingrese una descripción del equipo (opcional)"></textarea>
+        </div>
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="modalAgregarEquipo.close()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Equipo</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Modal Editar Equipo -->
+<dialog id="modalEditarEquipo" class="modal">
+  <div class="modal-box max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Editar Equipo</h3>
+    <form method="post" id="formEditarEquipo">
+      {% csrf_token %}
+      <input type="hidden" name="equipo_id" id="editar_equipo_id">
+      <div class="space-y-4">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Nombre del Equipo *</span>
+          </label>
+          <input type="text" name="nombre_equipo" id="editar_nombre_equipo" class="input input-bordered w-full" placeholder="Ingrese el nombre del equipo" required maxlength="100">
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Descripción</span>
+          </label>
+          <textarea name="descripcion" id="editar_descripcion" class="textarea textarea-bordered h-24" placeholder="Ingrese una descripción del equipo (opcional)"></textarea>
+        </div>
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="modalEditarEquipo.close()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Actualizar Equipo</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Modal Detalle Equipo -->
+<dialog id="modalDetalleEquipo" class="modal">
+  <div class="modal-box max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Detalles del Equipo</h3>
+    <div class="space-y-4">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Nombre del Equipo</span>
+        </label>
+        <p class="text-lg" id="detalle_nombre_equipo"></p>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Descripción</span>
+        </label>
+        <p class="text-gray-700" id="detalle_descripcion"></p>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Fecha de Creación</span>
+        </label>
+        <p class="text-gray-700" id="detalle_fecha_creacion"></p>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">ID del Equipo</span>
+        </label>
+        <p class="text-gray-700" id="detalle_equipo_id"></p>
+      </div>
+    </div>
+    <div class="modal-action">
+      <button type="button" class="btn btn-ghost" onclick="modalDetalleEquipo.close()">Cerrar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Modal Eliminar Equipo -->
+<dialog id="modalEliminarEquipo" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Eliminar Equipo</h3>
+    <p class="py-4">¿Está seguro de que desea eliminar el equipo "<span id="eliminar_nombre_equipo" class="font-semibold"></span>"?</p>
+    <p class="text-sm text-gray-600 mb-4">Esta acción no se puede deshacer.</p>
+    <form method="post" id="formEliminarEquipo">
+      {% csrf_token %}
+      <input type="hidden" name="equipo_id" id="eliminar_equipo_id">
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="modalEliminarEquipo.close()">Cancelar</button>
+        <button type="submit" class="btn btn-error">Eliminar Equipo</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<script>
+    function toggleMenu(menuId) {
+        const menu = document.getElementById(menuId);
+        menu.classList.toggle('hidden');
+        
+        // Cerrar otros menús abiertos
+        document.querySelectorAll('[id^="menu-"]').forEach(otherMenu => {
+            if (otherMenu.id !== menuId && !otherMenu.classList.contains('hidden')) {
+                otherMenu.classList.add('hidden');
+            }
+        });
+    }
+
+    // Cerrar menús al hacer clic fuera de ellos
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.relative')) {
+            document.querySelectorAll('[id^="menu-"]').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+
+    function abrirModalEditarEquipo(equipoId, nombreEquipo, descripcion) {
+        document.getElementById('editar_equipo_id').value = equipoId;
+        document.getElementById('editar_nombre_equipo').value = nombreEquipo;
+        document.getElementById('editar_descripcion').value = descripcion || '';
+        
+        // Actualizar el action del formulario
+        document.getElementById('formEditarEquipo').action = "{% url 'editar_equipo' 0 %}".replace('0', equipoId);
+        
+        modalEditarEquipo.showModal();
+    }
+
+    function abrirModalDetalleEquipo(equipoId, nombreEquipo, descripcion, fechaCreacion) {
+        document.getElementById('detalle_equipo_id').textContent = '#' + equipoId;
+        document.getElementById('detalle_nombre_equipo').textContent = nombreEquipo;
+        document.getElementById('detalle_descripcion').textContent = descripcion || 'Sin descripción';
+        document.getElementById('detalle_fecha_creacion').textContent = fechaCreacion;
+        
+        modalDetalleEquipo.showModal();
+    }
+
+    function abrirModalEliminarEquipo(equipoId, nombreEquipo) {
+        document.getElementById('eliminar_equipo_id').value = equipoId;
+        document.getElementById('eliminar_nombre_equipo').textContent = nombreEquipo;
+        
+        // Actualizar el action del formulario
+        document.getElementById('formEliminarEquipo').action = "{% url 'eliminar_equipo' 0 %}".replace('0', equipoId);
+        
+        modalEliminarEquipo.showModal();
+    }
+
+    // Búsqueda en tiempo real
+    document.getElementById('search-input').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const equiposCards = document.querySelectorAll('.bg-gray-50.rounded-lg');
+        
+        equiposCards.forEach(card => {
+            const equipoNombre = card.querySelector('h4').textContent.toLowerCase();
+            const equipoDescripcion = card.querySelector('.text-sm') ? card.querySelector('.text-sm').textContent.toLowerCase() : '';
+            
+            if (equipoNombre.includes(searchTerm) || equipoDescripcion.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

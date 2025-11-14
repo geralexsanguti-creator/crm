@@ -1,0 +1,226 @@
+<dialog id="modalAsignarRol" class="modal modal-middle">
+    <div class="modal-box max-w-2xl p-0 overflow-hidden">
+        <!-- Header del Modal -->
+        <div class="bg-gradient-to-r from-primary to-secondary p-6 text-primary-content">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold">Asignar Rol</h3>
+                        <p class="text-primary-content/80">Asigna un rol del sistema a un usuario</p>
+                    </div>
+                </div>
+                <form method="dialog">
+                    <button class="btn btn-ghost btn-circle btn-sm text-primary-content hover:bg-white/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mensajes de éxito -->
+        {% if messages %}
+        <div class="p-4">
+            {% for message in messages %}
+            <div class="alert alert-success shadow-lg animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <h3 class="font-semibold">¡Éxito!</h3>
+                        <span class="text-sm">{{ message }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Formulario -->
+        <form method="post" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            <!-- Campo Usuario -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text text-lg font-semibold flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Usuario
+                    </span>
+                </label>
+                <select name="user" class="select select-bordered select-lg w-full bg-base-200 focus:bg-base-100 transition-colors" required>
+                    <option value="" disabled selected class="text-base-content/50">👤 Selecciona un usuario...</option>
+                    {% for user in usuarios %}
+                        <option value="{{ user.pk }}" class="text-base-content">
+                            {{ user.username }} 
+                            {% if user.first_name or user.last_name %}
+                                - {{ user.first_name }} {{ user.last_name }}
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="label">
+                    <span class="label-text-alt text-base-content/60">Selecciona el usuario al que asignarás el rol</span>
+                </div>
+            </div>
+
+            <!-- Campo Rol -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text text-lg font-semibold flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        Rol del Sistema
+                    </span>
+                </label>
+                <select name="role" class="select select-bordered select-lg w-full bg-base-200 focus:bg-base-100 transition-colors" required>
+                    <option value="" disabled selected class="text-base-content/50">🎭 Selecciona un rol...</option>
+                    {% for role in roles %}
+                        <option value="{{ role.role_name }}" class="text-base-content">
+                            {{ role.role_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="label">
+                    <span class="label-text-alt text-base-content/60">Elige el rol que se asignará al usuario</span>
+                </div>
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="bg-info/10 border border-info/20 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-info mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <h4 class="font-semibold text-info text-sm">Información importante</h4>
+                        <p class="text-info/80 text-xs mt-1">
+                            Al asignar un nuevo rol, se reemplazarán los roles existentes del usuario. 
+                            Los permisos se actualizarán inmediatamente en el sistema.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas Rápidas -->
+            <div class="grid grid-cols-2 gap-4 p-4 bg-base-200 rounded-lg">
+                <div class="text-center">
+                    <div class="stat-value text-primary text-lg">{{ usuarios.count }}</div>
+                    <div class="stat-desc text-xs">Usuarios</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-value text-secondary text-lg">{{ roles.count }}</div>
+                    <div class="stat-desc text-xs">Roles</div>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="modal-action flex gap-3 pt-4 border-t border-base-300">
+                <form method="dialog" class="flex-1">
+                    <button type="button" class="btn btn-outline btn-lg w-full gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Cancelar
+                    </button>
+                </form>
+                <button type="submit" class="btn btn-primary btn-lg flex-1 gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Asignar Rol
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Fondo del modal para cerrar al hacer click fuera -->
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- JavaScript para manejar el modal -->
+<script>
+// Función para abrir el modal desde cualquier lugar
+function abrirModalAsignarRol() {
+    const modal = document.getElementById('modalAsignarRol');
+    if (modal) {
+        modal.showModal();
+    }
+}
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('modalAsignarRol');
+        if (modal) {
+            modal.close();
+        }
+    }
+});
+
+// Si hay mensajes de éxito, abrir automáticamente el modal
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modalAsignarRol');
+    if (modal) {
+        modal.showModal();
+    }
+});
+
+</script>
+
+<!-- Estilos personalizados -->
+<style>
+.animate-fade-in {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-box {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px hsl(var(--p) / 0.4);
+}
+
+.select:focus {
+    outline: 2px solid hsl(var(--p) / 0.5);
+    outline-offset: 2px;
+}
+</style>
+

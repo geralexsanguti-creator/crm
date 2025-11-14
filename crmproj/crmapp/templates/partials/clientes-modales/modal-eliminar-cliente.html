@@ -1,0 +1,167 @@
+<dialog id="modalEliminarCliente" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalEliminarCliente()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-lg">Confirmar Eliminación</h3>
+        
+        <div class="py-4">
+            <div class="alert alert-warning mb-4">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <label>Esta acción no se puede deshacer</label>
+                </div>
+            </div>
+            
+            <p class="text-gray-700 mb-4" id="mensajeEliminacionCliente">
+                ¿Estás seguro de que deseas eliminar este cliente?
+            </p>
+            
+            <!-- Información del cliente a eliminar -->
+            <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="nombreClienteEliminar">-</h4>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p id="infoContactoEliminar">-</p>
+                            <p id="infoRegistroEliminar">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advertencia si tiene ventas asociadas -->
+            <div class="alert alert-error mt-4 hidden" id="alertaVentasAsociadas">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <div>
+                        <p class="font-semibold">¡Advertencia!</p>
+                        <p class="text-sm">Este cliente tiene <span id="cantidadVentas" class="font-bold">0</span> venta(s) asociada(s).</p>
+                        <p class="text-sm">Al eliminar el cliente, también se eliminarán todas sus ventas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de eliminación -->
+        <form method="POST" action="{% url 'eliminar_cliente' %}" id="formEliminarCliente">
+            {% csrf_token %}
+            <input type="hidden" id="clienteIdEliminar" name="cliente_id">
+        </form>
+
+        <!-- Mostrar mensajes de Django -->
+        {% if messages %}
+            <div class="space-y-2 mb-4">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                        <div class="flex-1">
+                            {% if message.tags == 'error' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                                </svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">        
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>                      
+                                </svg>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="modal-action">
+            <button type="button" onclick="cerrarModalEliminarCliente()" class="btn btn-ghost">Cancelar</button>
+            <button type="button" onclick="confirmarEliminacionCliente()" class="btn btn-error" id="btnConfirmarEliminarCliente">
+                Sí, Eliminar Cliente
+            </button>
+        </div>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalEliminarCliente()">close</button>
+    </form>
+</dialog>
+
+<script>
+let clienteAEliminar = null;
+
+function abrirModalEliminarCliente(clienteId, clienteNombre, clienteEmail = '', clienteTelefono = '', fechaRegistro = '', ventasCount = 0) {
+    clienteAEliminar = clienteId;
+    
+    // Llenar información del cliente
+    document.getElementById('clienteIdEliminar').value = clienteId;
+    document.getElementById('nombreClienteEliminar').textContent = clienteNombre || 'Cliente sin nombre';
+    
+    // Información de contacto
+    let contactoInfo = '';
+    if (clienteEmail) contactoInfo += clienteEmail;
+    if (clienteTelefono) {
+        if (contactoInfo) contactoInfo += ' • ';
+        contactoInfo += clienteTelefono;
+    }
+    document.getElementById('infoContactoEliminar').textContent = contactoInfo || 'Sin información de contacto';
+    document.getElementById('infoRegistroEliminar').textContent = `Registrado: ${fechaRegistro || 'Fecha no disponible'}`;
+    
+    // Actualizar mensaje principal
+    document.getElementById('mensajeEliminacionCliente').textContent = 
+        `¿Estás seguro de que deseas eliminar al cliente "${clienteNombre || 'sin nombre'}"?`;
+    
+    // Mostrar advertencia si tiene ventas asociadas
+    const alerta = document.getElementById('alertaVentasAsociadas');
+    const cantidadVentas = document.getElementById('cantidadVentas');
+    const btnConfirmar = document.getElementById('btnConfirmarEliminarCliente');
+    
+    if (ventasCount > 0) {
+        cantidadVentas.textContent = ventasCount;
+        alerta.classList.remove('hidden');
+        btnConfirmar.innerHTML = `Sí, Eliminar Cliente y ${ventasCount} Venta(s)`;
+    } else {
+        alerta.classList.add('hidden');
+        btnConfirmar.innerHTML = 'Sí, Eliminar Cliente';
+    }
+    
+    // Mostrar el modal
+    document.getElementById('modalEliminarCliente').showModal();
+}
+
+function cerrarModalEliminarCliente() {
+    document.getElementById('modalEliminarCliente').close();
+    clienteAEliminar = null;
+}
+
+function confirmarEliminacionCliente() {
+    // Enviar el formulario de forma tradicional
+    document.getElementById('formEliminarCliente').submit();
+}
+
+// Cerrar modal con ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalEliminarCliente();
+    }
+});
+
+// Prevenir envío accidental con Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formEliminarCliente');
+    if (form) {
+        form.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>

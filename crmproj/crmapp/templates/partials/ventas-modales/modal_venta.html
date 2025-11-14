@@ -1,0 +1,121 @@
+<dialog id="modal_venta" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 id="modal_titulo" class="font-bold text-lg mb-6">Nueva Venta</h3>
+        
+        <form id="venta_form" method="post">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Producto -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Producto</span>
+                    </label>
+                    <select name="producto" id="id_producto" class="select select-bordered w-full" required>
+                        <option value="">Seleccionar producto</option>
+                        {% for producto in productos %}
+                        <option value="{{ producto.producto_id }}">{{ producto.nombre_producto }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Cliente -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Cliente</span>
+                    </label>
+                    <select name="cliente" id="id_cliente" class="select select-bordered w-full" required>
+                        <option value="">Seleccionar cliente</option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.cliente_id }}">{{ cliente.nombre_cliente }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Comercial -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Comercial Responsable</span>
+                    </label>
+                    <select name="usuario" id="id_usuario" class="select select-bordered w-full" required>
+                        <option value="">Seleccionar comercial</option>
+                        {% for usuario in usuarios %}
+                        <option value="{{ usuario.usuario_id }}">
+                            {{ usuario.user.get_full_name }} - {{ usuario.equipo.nombre_equipo }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Monto -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Monto de Venta</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-gray-500">$</span>
+                        <input type="number" name="monto_venta" id="id_monto_venta" 
+                               step="0.01" min="0" class="input input-bordered w-full pl-8" required>
+                    </div>
+                </div>
+                
+                <!-- Fecha Inicio -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Fecha de Contratación</span>
+                    </label>
+                    <input type="date" name="fecha_inicio" id="id_fecha_inicio" 
+                           class="input input-bordered w-full" required>
+                </div>
+                
+                <!-- Fecha Fin -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">Fecha de Finalización</span>
+                    </label>
+                    <input type="date" name="fecha_fin" id="id_fecha_fin" 
+                           class="input input-bordered w-full">
+                </div>
+                
+                <!-- Estado -->
+                <div class="form-control md:col-span-2">
+                    <label class="label">
+                        <span class="label-text font-semibold">Estado</span>
+                    </label>
+                    <select name="estado" id="id_estado" class="select select-bordered w-full" required>
+                        <option value="">Seleccionar estado</option>
+                        <option value="Prospecto">Prospecto</option>
+                        <option value="Contratado">Contratado</option>
+                        <option value="En Instalación">En Instalación</option>
+                        <option value="Finalizado">Finalizado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Notas Adicionales -->
+            <div class="form-control mt-6">
+                <label class="label">
+                    <span class="label-text font-semibold">Notas Adicionales</span>
+                </label>
+                <textarea name="notas" id="id_notas" class="textarea textarea-bordered h-24" 
+                          placeholder="Observaciones o comentarios adicionales..."></textarea>
+            </div>
+            
+            <!-- Botones -->
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_venta').close()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" @click="guardarVenta()">
+                    <i class="fas fa-save mr-2"></i>
+                    <span x-text="modoEdicion ? 'Actualizar Venta' : 'Guardar Venta'"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>

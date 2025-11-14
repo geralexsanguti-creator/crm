@@ -1,0 +1,240 @@
+{% load static %}
+<dialog id="modal_producto" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Agregar Nuevo Producto</h3>
+        
+        <!-- Añadir ID al formulario y quitar el action para usar AJAX -->
+        <form id="formAgregarProducto" method="POST" action="{% url 'agregar_producto' %}" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre del Producto *</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="nombre" 
+                            placeholder="Ingresa el nombre del producto" 
+                            class="input input-bordered w-full" 
+                            required
+                        >
+                    </div>
+
+                    <!-- Código del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Código del Producto</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="codigo" 
+                            placeholder="Código único del producto" 
+                            class="input input-bordered w-full"
+                        >
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Categoría *</span>
+                        </label>
+                        <select name="categoria" class="select select-bordered w-full" required>
+                            <option value="">Selecciona una categoría</option>
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Precio *</span>
+                        </label>
+                        <div class="join w-full">
+                            <span class="join-item btn btn-disabled">$</span>
+                            <input 
+                                type="number" 
+                                name="precio" 
+                                step="1" 
+                                min="0" 
+                                placeholder="0.00" 
+                                class="input input-bordered join-item w-full" 
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Cantidad -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Cantidad Inicial *</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            name="cantidad" 
+                            min="0" 
+                            value="0" 
+                            class="input input-bordered w-full" 
+                            required
+                        >
+                    </div>
+
+                   
+
+                    <!-- Imagen del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Imagen del Producto</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            name="imagen" 
+                            class="file-input file-input-bordered w-full"
+                            accept="image/*"
+                        >
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" name="activo" class="toggle toggle-success" checked />
+                            <span class="label-text font-semibold">Producto Activo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Descripción del Producto</span>
+                </label>
+                <textarea 
+                    name="descripcion" 
+                    rows="3" 
+                    placeholder="Describe las características del producto..." 
+                    class="textarea textarea-bordered"
+                ></textarea>
+            </div>
+
+            <!-- Contenedor para mensajes dinámicos -->
+            <div id="messagesContainer" class="space-y-2"></div>
+
+            <!-- Botones de Acción -->
+            <div class="modal-action">
+                <button type="button" onclick="modal_producto.close()" class="btn btn-ghost">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Guardar Producto
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Cerrar modal al hacer clic fuera -->
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+
+</dialog>
+<script>
+document.getElementById('formAgregarProducto').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevenir envío normal del formulario
+    
+    const formData = new FormData(this);
+    const submitButton = this.querySelector('button[type="submit"]');
+    const messagesContainer = document.getElementById('messagesContainer');
+    
+    // Mostrar loading
+    submitButton.innerHTML = 'Guardando...';
+    submitButton.disabled = true;
+    
+    // Limpiar mensajes anteriores
+    messagesContainer.innerHTML = '';
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            messagesContainer.innerHTML = `
+                <div class="alert alert-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>${data.message}</span>
+                </div>
+            `;
+            
+            // Limpiar formulario
+            this.reset();
+            
+            // Cerrar modal después de 2 segundos
+            setTimeout(() => {
+                modal_producto.close();
+                // Recargar la página o actualizar la tabla de productos
+                location.reload();
+            }, 2000);
+            
+        } else {
+            // Mostrar errores
+            let errorHTML = '<div class="alert alert-error">';
+            if (data.errors) {
+                errorHTML += '<ul>';
+                for (const field in data.errors) {
+                    data.errors[field].forEach(error => {
+                        errorHTML += `<li>${error}</li>`;
+                    });
+                }
+                errorHTML += '</ul>';
+            } else {
+                errorHTML += `<span>${data.message || 'Error al guardar el producto'}</span>`;
+            }
+            errorHTML += '</div>';
+            
+            messagesContainer.innerHTML = errorHTML;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        messagesContainer.innerHTML = `
+            <div class="alert alert-error">
+                <span>Error de conexión. Intenta nuevamente.</span>
+            </div>
+        `;
+    })
+    .finally(() => {
+        // Restaurar botón
+        submitButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Guardar Producto
+        `;
+        submitButton.disabled = false;
+    });
+});
+</script>

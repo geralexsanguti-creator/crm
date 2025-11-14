@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="flex min-h-screen bg-gray-100">
+    
+    <!-- Contenido principal -->
+    <div class="flex-1 p-8">
+        {% block dashboard_content %}
+        <!-- El contenido específico de cada pestaña irá aquí -->
+        {% endblock %}
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+
+<script src="{% static 'js/dashboard-charts.js' %}"></script>
+{% endblock %}

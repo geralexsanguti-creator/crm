@@ -1,0 +1,377 @@
+{% load static %}
+<dialog id="modal_producto" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <!-- Título dinámico -->
+        <h3 class="font-bold text-2xl mb-6" id="modalTitulo">Agregar Nuevo Producto</h3>
+        
+        <!-- Formulario con ID para AJAX -->
+        <form id="formProducto" method="POST" action="{% url 'agregar_producto' %}" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            <!-- Campo oculto para el ID del producto (para edición) -->
+            <input type="hidden" id="productoId" name="producto_id" value="">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre del Producto *</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="nombre" 
+                            name="nombre" 
+                            placeholder="Ingresa el nombre del producto" 
+                            class="input input-bordered w-full" 
+                            required
+                        >
+                    </div>
+
+                    <!-- Código del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Código del Producto</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="codigo" 
+                            name="codigo" 
+                            placeholder="Código único del producto" 
+                            class="input input-bordered w-full"
+                        >
+                    </div>
+
+                    <!-- Categoría -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Categoría *</span>
+                        </label>
+                        <select id="categoria" name="categoria" class="select select-bordered w-full" required>
+                            <option value="">Selecciona una categoría</option>
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Precio *</span>
+                        </label>
+                        <div class="join w-full">
+                            <span class="join-item btn btn-disabled">$</span>
+                            <input 
+                                type="number" 
+                                id="precio" 
+                                name="precio" 
+                                step="0.01" 
+                                min="0" 
+                                placeholder="0.00" 
+                                class="input input-bordered join-item w-full" 
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Cantidad -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Cantidad *</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="cantidad" 
+                            name="cantidad" 
+                            min="0" 
+                            value="0" 
+                            class="input input-bordered w-full" 
+                            required
+                        >
+                    </div>
+
+                    <!-- Imagen del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Imagen del Producto</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            id="imagen" 
+                            name="imagen" 
+                            class="file-input file-input-bordered w-full"
+                            accept="image/*"
+                        >
+                        <!-- Vista previa de imagen (para edición) -->
+                        <div id="imagenPreview" class="mt-2 hidden">
+                            <img id="imagenActual" src="" alt="Imagen actual" class="w-20 h-20 object-cover rounded">
+                            <label class="label cursor-pointer justify-start gap-2 mt-1">
+                                <input type="checkbox" id="eliminarImagen" name="eliminar_imagen" class="checkbox checkbox-sm" />
+                                <span class="label-text text-sm">Eliminar imagen actual</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" id="activo" name="activo" class="toggle toggle-success" checked />
+                            <span class="label-text font-semibold">Producto Activo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Descripción del Producto</span>
+                </label>
+                <textarea 
+                    id="descripcion" 
+                    name="descripcion" 
+                    rows="3" 
+                    placeholder="Describe las características del producto..." 
+                    class="textarea textarea-bordered"
+                ></textarea>
+            </div>
+
+            <!-- Contenedor para mensajes dinámicos -->
+            <div id="messagesContainer" class="space-y-2"></div>
+
+            <!-- Botones de Acción -->
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModal()" class="btn btn-ghost">
+                    Cancelar
+                </button>
+                <button type="submit" id="submitButton" class="btn btn-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span id="submitText">Guardar Producto</span>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Cerrar modal al hacer clic fuera -->
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+// Variable global para el modo actual
+let modoActual = 'agregar';
+
+// Función para abrir modal en modo AGREGAR
+function abrirModalAgregar() {
+    modoActual = 'agregar';
+    document.getElementById('modalTitulo').textContent = 'Agregar Nuevo Producto';
+    document.getElementById('formProducto').action = "{% url 'agregar_producto' %}";
+    document.getElementById('submitText').textContent = 'Guardar Producto';
+    
+    // Limpiar formulario
+    limpiarFormulario();
+    
+    // Mostrar modal
+    modal_producto.showModal();
+}
+
+// Función para abrir modal en modo EDITAR
+function abrirModalEditar(productoId) {
+    modoActual = 'editar';
+    document.getElementById('modalTitulo').textContent = 'Editar Producto';
+    document.getElementById('formProducto').action = `/productos/editar/${productoId}/`;
+    document.getElementById('submitText').textContent = 'Actualizar Producto';
+    
+    // Cargar datos del producto
+    cargarDatosProducto(productoId);
+    
+    // Mostrar modal
+    modal_producto.showModal();
+}
+
+// Función para cargar datos del producto
+function cargarDatosProducto(productoId) {
+    // Mostrar loading
+    document.getElementById('nombre').value = 'Cargando...';
+    document.getElementById('submitButton').disabled = true;
+    
+    fetch(`/productos/obtener/${productoId}/`)
+        .then(response => response.json())
+        .then(data => {
+            // Llenar formulario con datos del producto
+            document.getElementById('productoId').value = data.id;
+            document.getElementById('nombre').value = data.nombre;
+            document.getElementById('codigo').value = data.codigo || '';
+            document.getElementById('descripcion').value = data.descripcion || '';
+            document.getElementById('precio').value = data.precio;
+            document.getElementById('cantidad').value = data.cantidad || data.stock || 0;
+            document.getElementById('categoria').value = data.categoria_id || data.categoria;
+            document.getElementById('activo').checked = data.activo !== false;
+            
+            // Manejar imagen
+            if (data.imagen_url) {
+                document.getElementById('imagenActual').src = data.imagen_url;
+                document.getElementById('imagenPreview').classList.remove('hidden');
+            } else {
+                document.getElementById('imagenPreview').classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarMensaje('error', 'Error al cargar los datos del producto');
+        })
+        .finally(() => {
+            document.getElementById('submitButton').disabled = false;
+        });
+}
+
+// Función para limpiar formulario
+function limpiarFormulario() {
+    document.getElementById('formProducto').reset();
+    document.getElementById('productoId').value = '';
+    document.getElementById('imagenPreview').classList.add('hidden');
+    document.getElementById('messagesContainer').innerHTML = '';
+}
+
+// Función para cerrar modal
+function cerrarModal() {
+    modal_producto.close();
+    limpiarFormulario();
+}
+
+// Función para mostrar mensajes
+function mostrarMensaje(tipo, mensaje) {
+    const messagesContainer = document.getElementById('messagesContainer');
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-error';
+    const icon = tipo === 'success' ? 
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />' :
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+    
+    messagesContainer.innerHTML = `
+        <div class="alert ${alertClass}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                ${icon}
+            </svg>
+            <span>${mensaje}</span>
+        </div>
+    `;
+}
+
+// Event listener para el formulario
+document.getElementById('formProducto').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitButton = document.getElementById('submitButton');
+    const messagesContainer = document.getElementById('messagesContainer');
+    
+    // Mostrar loading
+    submitButton.innerHTML = '<span class="loading loading-spinner"></span> Procesando...';
+    submitButton.disabled = true;
+    
+    // Limpiar mensajes anteriores
+    messagesContainer.innerHTML = '';
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarMensaje('success', data.message);
+            
+            // Cerrar modal después de 2 segundos y recargar
+            setTimeout(() => {
+                cerrarModal();
+                // Actualizar la interfaz según sea necesario
+                if (typeof actualizarListaProductos === 'function') {
+                    actualizarListaProductos();
+                } else {
+                    location.reload();
+                }
+            }, 2000);
+            
+        } else {
+            // Mostrar errores
+            let errorHTML = '<div class="alert alert-error"><ul>';
+            if (data.errors) {
+                for (const field in data.errors) {
+                    data.errors[field].forEach(error => {
+                        errorHTML += `<li>${error}</li>`;
+                    });
+                }
+            } else {
+                errorHTML += `<li>${data.message || 'Error al procesar la solicitud'}</li>`;
+            }
+            errorHTML += '</ul></div>';
+            
+            messagesContainer.innerHTML = errorHTML;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensaje('error', 'Error de conexión. Intenta nuevamente.');
+    })
+    .finally(() => {
+        // Restaurar botón
+        submitButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span id="submitText">${modoActual === 'agregar' ? 'Guardar Producto' : 'Actualizar Producto'}</span>
+        `;
+        submitButton.disabled = false;
+    });
+});
+
+// Cerrar modal al hacer clic fuera
+modal_producto.addEventListener('click', (e) => {
+    if (e.target === modal_producto) {
+        cerrarModal();
+    }
+});
+
+// Función para abrir modal en modo AGREGAR
+function abrirModalAgregarProducto() {
+    modoActual = 'agregar';
+    document.getElementById('modalTitulo').textContent = 'Agregar Nuevo Producto';
+    document.getElementById('formProducto').action = "{% url 'agregar_producto' %}";
+    document.getElementById('submitText').textContent = 'Guardar Producto';
+    
+    // Limpiar formulario
+    limpiarFormulario();
+    
+    // Mostrar modal
+    modal_producto.showModal();
+}
+
+// Función para abrir modal en modo EDITAR
+function abrirModalEditarProducto(productoId) {
+    modoActual = 'editar';
+    document.getElementById('modalTitulo').textContent = 'Editar Producto';
+    document.getElementById('formProducto').action = `/productos/editar/${productoId}/`;
+    document.getElementById('submitText').textContent = 'Actualizar Producto';
+    
+    // Cargar datos del producto
+    cargarDatosProducto(productoId);
+    
+    // Mostrar modal
+    modal_producto.showModal();
+}
+
+</script>

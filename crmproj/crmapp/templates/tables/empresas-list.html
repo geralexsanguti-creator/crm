@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+
+{% block title %}Empresas{% endblock %}
+{% block content %}
+<h1>Empresas</h1>
+
+<section class="empresas">
+    <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Gestión de Empresas Socias</h2>
+                <p class="mt-2 text-sm text-gray-600">Administre las empresas socias de su organización.</p>
+            </div>
+            
+             <button class="btn btn-outline btn-success px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" onclick="modalAgregarEmpresa.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nueva Empresa
+             </button>
+
+            {% include 'partials/empresas-modales/modal-agregar-empresa.html' %}
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Empresas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_empresas }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-green-100">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Comisión Promedio</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ comision_promedio|floatformat:2 }}%</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-purple-100">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Contactos Activos</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ contactos_activos }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-orange-100">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Registradas Hoy</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ empresas_hoy }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- En la sección de estadísticas, después de las 4 tarjetas principales -->
+        {% if empresa_mayor_comision %}
+        <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">Estadísticas Destacadas</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Mayor Comisión</p>
+                    <p class="text-lg font-bold text-green-600">{{ empresa_mayor_comision.comision_aplicable }}%</p>
+                    <p class="text-xs text-gray-500">{{ empresa_mayor_comision.nombre_empresa }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Menor Comisión</p>
+                    <p class="text-lg font-bold text-blue-600">{{ empresa_menor_comision.comision_aplicable }}%</p>
+                    <p class="text-xs text-gray-500">{{ empresa_menor_comision.nombre_empresa }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Más Productos</p>
+                    <p class="text-lg font-bold text-purple-600">{{ empresa_mas_productos.productos_count }}</p>
+                    <p class="text-xs text-gray-500">{{ empresa_mas_productos.nombre_empresa }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Filtro por Comisión Mínima -->
+            <div>
+                <label for="comision_min" class="block text-sm font-medium text-gray-700 mb-1">Comisión Mínima</label>
+                <div class="relative">
+                    <input type="number" id="comision_min" name="comision_min" placeholder="0" step="0.01" min="0" max="100" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtro por Comisión Máxima -->
+            <div>
+                <label for="comision_max" class="block text-sm font-medium text-gray-700 mb-1">Comisión Máxima</label>
+                <div class="relative">
+                    <input type="number" id="comision_max" name="comision_max" placeholder="100" step="0.01" min="0" max="100" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtro por Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email de Contacto</label>
+                <input type="text" id="email" name="email" placeholder="buscar@email.com" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex items-end space-x-4">
+                <button type="submit" class="w-full px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'lista_empresas' %}" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Empresas -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">Todas las Empresas Socias</h3>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Buscar empresa..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grid de Empresas -->
+        <div class="p-6">
+            {% if empresas %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for empresa in empresas %}
+                <div class="bg-gray-50 rounded-lg border border-gray-200 p-6 hover:shadow-md transition duration-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <div class="relative">
+                            <button type="button" class="text-gray-400 hover:text-gray-600 focus:outline-none" onclick="toggleMenu('menu-{{ empresa.empresa_id }}')">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                                </svg>
+                            </button>
+                            <div id="menu-{{ empresa.empresa_id }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+                                
+                                <button type="button" 
+                                        onclick="abrirModalEditarEmpresa(
+                                            '{{ empresa.empresa_id }}', 
+                                            `{{ empresa.nombre_empresa }}`, 
+                                            `{{ empresa.comision_aplicable }}`,
+                                            `{{ empresa.contacto_email }}`,
+                                            `{{ empresa.telefono }}`,
+                                            `{{ empresa.fecha_creacion|date:'d/m/Y H:i' }}`,
+                                            `{{ empresa.productos_count }}`
+                                        )" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Editar Empresa
+                                </button>
+                                
+                                
+                                <button type="button" 
+                                        onclick="abrirModalEliminarEmpresa(
+                                            '{{ empresa.empresa_id }}', 
+                                            '{{ empresa.nombre_empresa }}', 
+                                            '{{ empresa.comision_aplicable }}', 
+                                            '{{ empresa.contacto_email }}',
+                                            '{{ empresa.productos_count }}'
+                                        )" 
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2 truncate">{{ empresa.nombre_empresa }}</h4>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-sm font-semibold text-green-600">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            {{ empresa.comision_aplicable }}% Comisión
+                        </div>
+                        
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            {{ empresa.contacto_email }}
+                        </div>
+
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                            {{ empresa.telefono }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs text-gray-500">
+                            ID: #{{ empresa.empresa_id }}
+                        </span>
+                        <span class="text-xs text-gray-500">
+                            Registro: {{ empresa.fecha_creacion|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <!-- En el menú de acciones de cada empresa -->
+                        <button type="button" 
+                                onclick="abrirModalDetalleEmpresa(
+                                    '{{ empresa.empresa_id }}', 
+                                    `{{ empresa.nombre_empresa }}`, 
+                                    `{{ empresa.comision_aplicable }}`, 
+                                    `{{ empresa.contacto_email }}`, 
+                                    `{{ empresa.telefono }}`,
+                                    `{{ empresa.fecha_creacion|date:'d/m/Y H:i' }}`,
+                                    `{{ empresa.productos_count }}`,
+                                    `{{ empresa.productos_activos|default:0 }}`,
+                                    `{{ empresa.ventas_totales|default:0 }}`,
+                                    `{{ empresa.ingresos_totales|default:0}}`
+                                )" 
+                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Ver Detalles
+                        </button>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No hay empresas socias</h3>
+                <p class="mt-2 text-sm text-gray-500">Comience agregando su primera empresa socia.</p>
+                <div class="mt-6">
+                    <button onclick="modalAgregarEmpresa.showModal()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Agregar Primera Empresa
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Paginación -->
+        {% if empresas.has_other_pages %}
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Mostrando {{ empresas.start_index }} a {{ empresas.end_index }} de {{ empresas.paginator.count }} resultados
+            </div>
+            <div class="flex space-x-2">
+                {% if empresas.has_previous %}
+                <a href="?page={{ empresas.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Anterior
+                </a>
+                {% endif %}
+                
+                {% for num in empresas.paginator.page_range %}
+                    {% if empresas.number == num %}
+                    <span class="px-3 py-1 border border-blue-500 bg-blue-500 text-white rounded-md text-sm font-medium">
+                        {{ num }}
+                    </span>
+                    {% else %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if empresas.has_next %}
+                <a href="?page={{ empresas.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Siguiente
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+</section>
+
+<!-- Incluir modales -->
+{% include 'partials/empresas-modales/modal-agregar-empresa.html' %}
+{% include 'partials/empresas-modales/modal-editar-empresa.html' %}
+{% include 'partials/empresas-modales/modal-eliminar-empresa.html' %}
+
+<script>
+    function toggleMenu(menuId) {
+        const menu = document.getElementById(menuId);
+        menu.classList.toggle('hidden');
+    }
+
+    function confirmarEliminacion(empresaId, empresaNombre) {
+        const modal = document.getElementById('modalEliminarEmpresa');
+        modal.showModal();
+        document.getElementById('empresaNombreEliminar').textContent = empresaNombre;
+        document.getElementById('formEliminarEmpresa').action = `/empresas/eliminar/${empresaId}/`;
+    }
+
+    // Búsqueda en tiempo real
+    document.getElementById('search-input').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const empresasCards = document.querySelectorAll('.bg-gray-50.rounded-lg');
+        
+        empresasCards.forEach(card => {
+            const empresaNombre = card.querySelector('h4').textContent.toLowerCase();
+            if (empresaNombre.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

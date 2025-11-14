@@ -1,0 +1,183 @@
+<dialog id="modalAgregarEmpresa" class="modal">
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Agregar Nueva Empresa Socia</h3>
+        
+        <form method="POST" action="{% url 'crear_empresa' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre de la Empresa -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre de la Empresa *</span>
+                        </label>
+                        <input type="text" 
+                               name="nombre_empresa" 
+                               class="input input-bordered w-full {% if form.nombre_empresa.errors %}input-error{% endif %}"
+                               placeholder="Nombre de la empresa"
+                               value="{{ form.nombre_empresa.value|default:'' }}"
+                               required>
+                        {% if form.nombre_empresa.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.nombre_empresa.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Comisión Aplicable -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Comisión Aplicable (%) *</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" 
+                                   name="comision_aplicable" 
+                                   step="0.01" 
+                                   min="0" 
+                                   max="100" 
+                                   class="input input-bordered w-full {% if form.comision_aplicable.errors %}input-error{% endif %}"
+                                   placeholder="0.00"
+                                   value="{{ form.comision_aplicable.value|default:'' }}"
+                                   required>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500">%</span>
+                            </div>
+                        </div>
+                        {% if form.comision_aplicable.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.comision_aplicable.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Email de Contacto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Email de Contacto *</span>
+                        </label>
+                        <input type="email" 
+                               name="contacto_email" 
+                               class="input input-bordered w-full {% if form.contacto_email.errors %}input-error{% endif %}"
+                               placeholder="contacto@empresa.com"
+                               value="{{ form.contacto_email.value|default:'' }}"
+                               required>
+                        {% if form.contacto_email.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.contacto_email.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Teléfono *</span>
+                        </label>
+                        <input type="tel" 
+                               name="telefono" 
+                               class="input input-bordered w-full {% if form.telefono.errors %}input-error{% endif %}"
+                               placeholder="+1 234 567 8900"
+                               value="{{ form.telefono.value|default:'' }}"
+                               required>
+                        {% if form.telefono.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.telefono.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Adicional (opcional) -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Información Adicional</span>
+                    <span class="label-text-alt text-gray-500">Opcional</span>
+                </label>
+                <textarea name="informacion_adicional" 
+                          rows="3" 
+                          class="textarea textarea-bordered w-full {% if form.informacion_adicional.errors %}textarea-error{% endif %}"
+                          placeholder="Información adicional sobre la empresa...">{{ form.informacion_adicional.value|default:'' }}</textarea>
+                {% if form.informacion_adicional.errors %}
+                    <div class="text-error text-sm mt-1">
+                        {{ form.informacion_adicional.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Mostrar errores generales del formulario -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <!-- Mostrar mensajes de Django -->
+            {% if messages %}
+                <div class="space-y-2">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalAgregarEmpresa()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar Empresa</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalAgregarEmpresa()">close</button>
+    </form>
+</dialog>
+
+<script>
+function abrirModalAgregarEmpresa() {
+    document.getElementById('modalAgregarEmpresa').showModal();
+}
+
+function cerrarModalAgregarEmpresa() {
+    document.getElementById('modalAgregarEmpresa').close();
+    // Opcional: Limpiar el formulario al cerrar
+    document.querySelector('#modalAgregarEmpresa form').reset();
+}
+
+// Validación adicional del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('#modalAgregarEmpresa form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const comision = parseFloat(form.querySelector('[name="comision_aplicable"]').value);
+            if (comision < 0 || comision > 100) {
+                e.preventDefault();
+                alert('La comisión debe estar entre 0% y 100%');
+                return false;
+            }
+            
+            const telefono = form.querySelector('[name="telefono"]').value;
+            if (!telefono.trim()) {
+                e.preventDefault();
+                alert('Por favor ingrese un número de teléfono válido');
+                return false;
+            }
+        });
+    }
+});
+</script>

@@ -1,0 +1,105 @@
+<dialog id="modalEditarProducto" class="modal">
+    <div class="modal-box max-w-4xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-2xl mb-6">Editar Producto</h3>
+        
+        <!-- URL sin parámetro -->
+        <form method="POST" action="{% url 'editar_producto' %}" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" id="productoIdEditar" name="producto_id">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Columna Izquierda -->
+                <div class="space-y-4">
+                    <!-- Nombre del Producto -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre del Producto *</span>
+                        </label>
+                        <input type="text" 
+                               id="nombreEditar" 
+                               name="nombre_producto" 
+                               class="input input-bordered w-full" 
+                               required>
+                    </div>
+
+                    <!-- Precio Base -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Precio Base *</span>
+                        </label>
+                        <input type="number" 
+                               id="precioEditar" 
+                               name="precio_base" 
+                               step="0.01" 
+                               min="0" 
+                               class="input input-bordered w-full"
+                               required>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-4">
+                    <!-- Empresa -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Empresa *</span>
+                        </label>
+                        <select id="empresaEditar" 
+                                name="empresa" 
+                                class="select select-bordered w-full" 
+                                required>
+                            <option value="">Selecciona una empresa</option>
+                            {% for empresa in empresas %}
+                                <option value="{{ empresa.empresa_id }}">
+                                    {{ empresa.nombre_empresa }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-semibold">Descripción</span>
+                </label>
+                <textarea id="descripcionEditar" 
+                          name="descripcion" 
+                          rows="3" 
+                          class="textarea textarea-bordered"></textarea>
+            </div>
+
+            <div class="modal-action">
+                <button type="button" onclick="cerrarModalEditar()" class="btn btn-ghost">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+            </div>
+        </form>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+function abrirModalEditar(productoId, nombre, descripcion, precioBase, empresaId) {
+    // Llenar el formulario con los datos del producto
+    document.getElementById('productoIdEditar').value = productoId;
+    document.getElementById('nombreEditar').value = nombre;
+    document.getElementById('descripcionEditar').value = descripcion || '';
+    document.getElementById('precioEditar').value = precioBase;
+    document.getElementById('empresaEditar').value = empresaId;
+    
+    // Mostrar el modal
+    document.getElementById('modalEditarProducto').showModal();
+}
+
+function cerrarModalEditar() {
+    document.getElementById('modalEditarProducto').close();
+}
+</script>

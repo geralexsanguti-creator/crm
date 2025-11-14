@@ -1,0 +1,195 @@
+<dialog id="modalEliminarVenta" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="cerrarModalEliminarVenta()">✕</button>
+        </form>
+        
+        <h3 class="font-bold text-lg">Confirmar Eliminación</h3>
+        
+        <div class="py-4">
+            <div class="alert alert-warning mb-4">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <label>Esta acción no se puede deshacer</label>
+                </div>
+            </div>
+            
+            <p class="text-gray-700 mb-4" id="mensajeEliminacionVenta">
+                ¿Estás seguro de que deseas eliminar esta venta?
+            </p>
+            
+            <!-- Información de la venta a eliminar -->
+            <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="infoVentaEliminar">-</h4>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p id="infoClienteProducto">-</p>
+                            <p id="infoMontoEstado">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advertencia si no se puede eliminar -->
+            <div class="alert alert-error mt-4 hidden" id="alertaNoEliminable">
+                <div class="flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <p class="font-semibold">No se puede eliminar</p>
+                        <p class="text-sm" id="textoNoEliminable">Las ventas finalizadas o canceladas no pueden ser eliminadas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de eliminación -->
+        <form method="POST" action="{% url 'eliminar_venta' %}" id="formEliminarVenta">
+            {% csrf_token %}
+            <input type="hidden" id="ventaIdEliminar" name="venta_id">
+        </form>
+
+        <!-- Mostrar mensajes de Django -->
+        {% if messages %}
+            <div class="space-y-2 mb-4">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                        <div class="flex-1">
+                            {% if message.tags == 'error' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>                      
+                                </svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">        
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>                      
+                                </svg>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="modal-action">
+            <button type="button" onclick="cerrarModalEliminarVenta()" class="btn btn-ghost">Cancelar</button>
+            <button type="button" onclick="confirmarEliminacionVenta()" class="btn btn-error" id="btnConfirmarEliminarVenta">
+                Sí, Eliminar Venta
+            </button>
+        </div>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+        <button onclick="cerrarModalEliminarVenta()">close</button>
+    </form>
+</dialog>
+
+<script>
+let ventaAEliminar = null;
+
+function abrirModalEliminarVenta(ventaId, clienteNombre, productoNombre, montoVenta, estado) {
+    ventaAEliminar = ventaId;
+    
+    // Llenar información de la venta
+    document.getElementById('ventaIdEliminar').value = ventaId;
+    document.getElementById('infoVentaEliminar').textContent = `Venta #${ventaId}`;
+    document.getElementById('infoClienteProducto').textContent = `${clienteNombre} - ${productoNombre}`;
+    document.getElementById('infoMontoEstado').textContent = `$${montoVenta} • ${estado}`;
+    
+    // Actualizar mensaje principal
+    document.getElementById('mensajeEliminacionVenta').textContent = 
+        `¿Estás seguro de que deseas eliminar la venta de "${productoNombre}" para el cliente "${clienteNombre}"?`;
+    
+    // Verificar si se puede eliminar
+    const puedeEliminarse = !['Finalizado', 'Cancelado'].includes(estado);
+    toggleEliminacionVenta(puedeEliminarse, estado);
+    
+    // Mostrar el modal
+    document.getElementById('modalEliminarVenta').showModal();
+}
+
+function cerrarModalEliminarVenta() {
+    document.getElementById('modalEliminarVenta').close();
+    ventaAEliminar = null;
+    
+    // Resetear estado del botón
+    const btnConfirmar = document.getElementById('btnConfirmarEliminarVenta');
+    btnConfirmar.disabled = false;
+    btnConfirmar.innerHTML = 'Sí, Eliminar Venta';
+}
+
+function toggleEliminacionVenta(puedeEliminarse, estado) {
+    const alerta = document.getElementById('alertaNoEliminable');
+    const btnConfirmar = document.getElementById('btnConfirmarEliminarVenta');
+    const textoAlerta = document.getElementById('textoNoEliminable');
+    
+    if (puedeEliminarse) {
+        alerta.classList.add('hidden');
+        btnConfirmar.disabled = false;
+        
+        // Mostrar advertencia para ventas en estado específico
+        if (estado === 'Contratado') {
+            textoAlerta.textContent = '⚠️ Esta venta está contratada. Al eliminarla, se perderán todos los datos asociados.';
+            alerta.classList.remove('hidden');
+            alerta.classList.remove('alert-error');
+            alerta.classList.add('alert-warning');
+        }
+    } else {
+        textoAlerta.textContent = 'Las ventas finalizadas o canceladas no pueden ser eliminadas.';
+        alerta.classList.remove('hidden');
+        alerta.classList.remove('alert-warning');
+        alerta.classList.add('alert-error');
+        btnConfirmar.disabled = true;
+    }
+}
+
+function confirmarEliminacionVenta() {
+    if (!ventaAEliminar) return;
+    
+    // Enviar el formulario de forma tradicional
+    document.getElementById('formEliminarVenta').submit();
+}
+
+// Cerrar modal con ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalEliminarVenta();
+    }
+});
+
+// Prevenir envío accidental con Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formEliminarVenta');
+    if (form) {
+        form.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+});
+
+// Función para eliminar fila de la tabla (opcional, si usas AJAX)
+function eliminarFilaVenta(ventaId) {
+    const fila = document.querySelector(`[data-venta-id="${ventaId}"]`);
+    if (fila) {
+        fila.remove();
+        // Verificar si la tabla quedó vacía
+        const tbody = document.querySelector('tbody');
+        if (tbody && tbody.children.length === 0) {
+            location.reload();
+        }
+    } else {
+        location.reload();
+    }
+}
+</script>

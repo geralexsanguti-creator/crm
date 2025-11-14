@@ -1,0 +1,121 @@
+<dialog id="modalDetalleComision" class="modal">
+    <div class="modal-box max-w-2xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Detalle de Comisión</h3>
+        <p class="text-sm text-gray-600 mb-6">Información completa de la comisión.</p>
+
+        <div class="space-y-6">
+            <!-- Información Principal -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Información Básica</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">ID Comisión:</span>
+                            <span class="text-sm font-semibold" id="detalle_id">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Estado:</span>
+                            <span class="text-sm font-semibold" id="detalle_estado">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Monto:</span>
+                            <span class="text-sm font-semibold text-green-600" id="detalle_monto">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Fechas</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Calculada:</span>
+                            <span class="text-sm font-semibold" id="detalle_fecha_calculada">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Pagada:</span>
+                            <span class="text-sm font-semibold" id="detalle_fecha_pagada">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Relaciones -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Usuario</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span class="text-sm font-semibold" id="detalle_usuario">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Venta Asociada</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            <span class="text-sm font-semibold" id="detalle_venta">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Regla -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 class="text-sm font-semibold text-gray-700 mb-3">Regla de Comisión</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Regla Aplicada:</span>
+                        <span class="text-sm font-semibold" id="detalle_regla">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Porcentaje:</span>
+                        <span class="text-sm font-semibold" id="detalle_porcentaje">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end pt-6 border-t border-gray-200 mt-6">
+            <button onclick="modalDetalleComision.close()" 
+                    class="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalDetalleComision(comisionId, usuario, venta, monto, estado, fechaCalculada, fechaPagada, regla, porcentaje) {
+            const modal = document.getElementById('modalDetalleComision');
+            
+            // Llenar información
+            document.getElementById('detalle_id').textContent = '#' + comisionId;
+            document.getElementById('detalle_usuario').textContent = usuario;
+            document.getElementById('detalle_venta').textContent = 'Venta #' + venta;
+            document.getElementById('detalle_monto').textContent = '$' + parseFloat(monto).toFixed(2);
+            document.getElementById('detalle_estado').textContent = estado;
+            document.getElementById('detalle_fecha_calculada').textContent = fechaCalculada;
+            document.getElementById('detalle_fecha_pagada').textContent = fechaPagada || 'No pagada';
+            document.getElementById('detalle_regla').textContent = regla || '-';
+            document.getElementById('detalle_porcentaje').textContent = porcentaje ? porcentaje + '%' : '-';
+            
+            // Colorear estado
+            const estadoElement = document.getElementById('detalle_estado');
+            estadoElement.className = 'text-sm font-semibold ' + 
+                (estado === 'Pagada' ? 'text-green-600' : 
+                 estado === 'Pendiente' ? 'text-yellow-600' : 'text-red-600');
+            
+            modal.showModal();
+        }
+    </script>
+</dialog>

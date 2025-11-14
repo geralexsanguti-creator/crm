@@ -1,0 +1,513 @@
+{% extends 'base.html' %}
+
+{% block title %}Comisiones{% endblock %}
+{% block content %}
+<h1>Comisiones</h1>
+
+<section class="comisiones">
+    <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Gestión de Comisiones</h2>
+                <p class="mt-2 text-sm text-gray-600">Administre las comisiones generadas por ventas.</p>
+            </div>
+            
+             <button class="btn btn-outline btn-success px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" onclick="modalAgregarComision.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nueva Comisión
+             </button>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Comisiones</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_comisiones }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-green-100">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Monto Total</p>
+                    <p class="text-2xl font-bold text-gray-900">${{ monto_total_comisiones|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-purple-100">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Comisiones Pagadas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ comisiones_pagadas }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-orange-100">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Comisiones Pendientes</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ comisiones_pendientes }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Destacadas -->
+    {% if comision_mayor_monto %}
+    <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h4 class="text-lg font-semibold text-gray-900 mb-4">Estadísticas Destacadas</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Mayor Comisión</p>
+                <p class="text-lg font-bold text-green-600">${{ comision_mayor_monto.monto_comision|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500">{{ comision_mayor_monto.usuario.nombre }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Menor Comisión</p>
+                <p class="text-lg font-bold text-blue-600">${{ comision_menor_monto.monto_comision|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500">{{ comision_menor_monto.usuario.nombre }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Promedio Comisiones</p>
+                <p class="text-lg font-bold text-purple-600">${{ promedio_comisiones|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500">Por comisión</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Filtro por Estado -->
+            <div>
+                <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                <select id="estado" name="estado" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">Todos</option>
+                    <option value="Pendiente" {% if request.GET.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                    <option value="Pagada" {% if request.GET.estado == 'Pagada' %}selected{% endif %}>Pagada</option>
+                    <option value="Cancelada" {% if request.GET.estado == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                </select>
+            </div>
+            
+            <!-- Filtro por Monto Mínimo -->
+            <div>
+                <label for="monto_min" class="block text-sm font-medium text-gray-700 mb-1">Monto Mínimo</label>
+                <div class="relative">
+                    <input type="number" id="monto_min" name="monto_min" placeholder="0" step="0.01" min="0" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">$</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtro por Monto Máximo -->
+            <div>
+                <label for="monto_max" class="block text-sm font-medium text-gray-700 mb-1">Monto Máximo</label>
+                <div class="relative">
+                    <input type="number" id="monto_max" name="monto_max" placeholder="10000" step="0.01" min="0" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-8">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 text-sm">$</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-end space-x-4">
+                <button type="submit" class="w-full px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'lista_comisiones' %}" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Comisiones -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">Todas las Comisiones</h3>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Buscar comisión..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabla de Comisiones -->
+        <div class="overflow-x-auto">
+            {% if comisiones %}
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venta</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Regla</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Calculada</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Pagada</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for comision in comisiones %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ comision.comision_id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ comision.usuario.nombre }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Venta #{{ comision.venta.venta_id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ comision.regla.nombre }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">${{ comision.monto_comision|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if comision.estado == 'Pendiente' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                Pendiente
+                            </span>
+                            {% elif comision.estado == 'Pagada' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Pagada
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                Cancelada
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ comision.fecha_calculada|date:"d/m/Y H:i" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if comision.fecha_pagada %}
+                                {{ comision.fecha_pagada|date:"d/m/Y" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button type="button" 
+                                        onclick="abrirModalEditarComision(
+                                            `{{ comision.comision_id }}`,
+                                            '{{ comision.usuario.usuario_id }}',
+                                            '{{ comision.venta.venta_id }}',
+                                            '{{ comision.regla.regla_id }}',
+                                            '{{ comision.monto_comision }}',
+                                            '{{ comision.estado }}',
+                                            `{{ comision.fecha_pagada|date:'Y-m-d' }}`
+                                        )" 
+                                        class="text-blue-600 hover:text-blue-900">
+                                    Editar
+                                </button>
+                                <button type="button" 
+                                        onclick="abrirModalEliminarComision(
+                                            '{{ comision.comision_id }}',
+                                            '{{ comision.usuario.nombre }}',
+                                            '{{ comision.monto_comision }}',
+                                            '{{ comision.estado }}'
+                                        )" 
+                                        class="text-red-600 hover:text-red-900">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No hay comisiones registradas</h3>
+                <p class="mt-2 text-sm text-gray-500">Comience agregando su primera comisión.</p>
+                <div class="mt-6">
+                    <button onclick="modalAgregarComision.showModal()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Agregar Primera Comisión
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Paginación -->
+        {% if comisiones.has_other_pages %}
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Mostrando {{ comisiones.start_index }} a {{ comisiones.end_index }} de {{ comisiones.paginator.count }} resultados
+            </div>
+            <div class="flex space-x-2">
+                {% if comisiones.has_previous %}
+                <a href="?page={{ comisiones.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Anterior
+                </a>
+                {% endif %}
+                
+                {% for num in comisiones.paginator.page_range %}
+                    {% if comisiones.number == num %}
+                    <span class="px-3 py-1 border border-blue-500 bg-blue-500 text-white rounded-md text-sm font-medium">
+                        {{ num }}
+                    </span>
+                    {% else %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if comisiones.has_next %}
+                <a href="?page={{ comisiones.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Siguiente
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+</section>
+
+<!-- Modales -->
+<!-- Modal Agregar Comisión -->
+<dialog id="modalAgregarComision" class="modal">
+  <div class="modal-box max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Agregar Nueva Comisión</h3>
+    <form method="post" action="{% url 'agregar_comision' %}">
+      {% csrf_token %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Usuario</span>
+          </label>
+          <select name="usuario" class="select select-bordered w-full" required>
+            <option value="">Seleccione un usuario</option>
+            {% for usuario in usuarios %}
+            <option value="{{ usuario.usuario_id }}">{{ usuario.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Venta</span>
+          </label>
+          <select name="venta" class="select select-bordered w-full" required>
+            <option value="">Seleccione una venta</option>
+            {% for venta in ventas %}
+            <option value="{{ venta.venta_id }}">Venta #{{ venta.venta_id }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Regla de Comisión</span>
+          </label>
+          <select name="regla" class="select select-bordered w-full" required>
+            <option value="">Seleccione una regla</option>
+            {% for regla in reglas %}
+            <option value="{{ regla.regla_id }}">{{ regla.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Monto de Comisión</span>
+          </label>
+          <input type="number" name="monto_comision" step="0.01" min="0" class="input input-bordered" placeholder="0.00" required>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Estado</span>
+          </label>
+          <select name="estado" class="select select-bordered w-full" required>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Pagada">Pagada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Fecha de Pago</span>
+          </label>
+          <input type="date" name="fecha_pagada" class="input input-bordered">
+        </div>
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="modalAgregarComision.close()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Comisión</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Modal Editar Comisión -->
+<dialog id="modalEditarComision" class="modal">
+  <div class="modal-box max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Editar Comisión</h3>
+    <form method="post" id="formEditarComision">
+      {% csrf_token %}
+      <input type="hidden" name="comision_id" id="editar_comision_id">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Usuario</span>
+          </label>
+          <select name="usuario" id="editar_usuario" class="select select-bordered w-full" required>
+            <option value="">Seleccione un usuario</option>
+            {% for usuario in usuarios %}
+            <option value="{{ usuario.usuario_id }}">{{ usuario.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Venta</span>
+          </label>
+          <select name="venta" id="editar_venta" class="select select-bordered w-full" required>
+            <option value="">Seleccione una venta</option>
+            {% for venta in ventas %}
+            <option value="{{ venta.venta_id }}">Venta #{{ venta.venta_id }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Regla de Comisión</span>
+          </label>
+          <select name="regla" id="editar_regla" class="select select-bordered w-full" required>
+            <option value="">Seleccione una regla</option>
+            {% for regla in reglas %}
+            <option value="{{ regla.regla_id }}">{{ regla.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Monto de Comisión</span>
+          </label>
+          <input type="number" name="monto_comision" id="editar_monto_comision" step="0.01" min="0" class="input input-bordered" placeholder="0.00" required>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Estado</span>
+          </label>
+          <select name="estado" id="editar_estado" class="select select-bordered w-full" required>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Pagada">Pagada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Fecha de Pago</span>
+          </label>
+          <input type="date" name="fecha_pagada" id="editar_fecha_pagada" class="input input-bordered">
+        </div>
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="modalEditarComision.close()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Actualizar Comisión</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Modal Eliminar Comisión -->
+<dialog id="modalEliminarComision" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Eliminar Comisión</h3>
+    <p class="py-4">¿Está seguro de que desea eliminar la comisión de <span id="eliminar_usuario_nombre" class="font-semibold"></span> por un monto de $<span id="eliminar_monto_comision"></span> con estado <span id="eliminar_estado"></span>?</p>
+    <form method="post" id="formEliminarComision">
+      {% csrf_token %}
+      <input type="hidden" name="comision_id" id="eliminar_comision_id">
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick="modalEliminarComision.close()">Cancelar</button>
+        <button type="submit" class="btn btn-error">Eliminar Comisión</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<script>
+    // Búsqueda en tiempo real
+    document.getElementById('search-input').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Funciones para abrir modales
+    function abrirModalEditarComision(comisionId, usuarioId, ventaId, reglaId, montoComision, estado, fechaPagada) {
+        document.getElementById('editar_comision_id').value = comisionId;
+        document.getElementById('editar_usuario').value = usuarioId;
+        document.getElementById('editar_venta').value = ventaId;
+        document.getElementById('editar_regla').value = reglaId;
+        document.getElementById('editar_monto_comision').value = montoComision;
+        document.getElementById('editar_estado').value = estado;
+        document.getElementById('editar_fecha_pagada').value = fechaPagada;
+        
+        // Actualizar el action del formulario
+        document.getElementById('formEditarComision').action = "{% url 'editar_comision' 0 %}".replace('0', comisionId);
+        
+        modalEditarComision.showModal();
+    }
+
+    function abrirModalEliminarComision(comisionId, usuarioNombre, montoComision, estado) {
+        document.getElementById('eliminar_comision_id').value = comisionId;
+        document.getElementById('eliminar_usuario_nombre').textContent = usuarioNombre;
+        document.getElementById('eliminar_monto_comision').textContent = montoComision;
+        document.getElementById('eliminar_estado').textContent = estado;
+        
+        // Actualizar el action del formulario
+        document.getElementById('formEliminarComision').action = "{% url 'eliminar_comision' 0 %}".replace('0', comisionId);
+        
+        modalEliminarComision.showModal();
+    }
+</script>
+
+{% endblock %}

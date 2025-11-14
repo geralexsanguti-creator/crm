@@ -1,0 +1,463 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Productos{% endblock %}
+
+{% block dashboard_content %}
+<section class="p-6 bg-base-100 min-h-screen">
+    <!-- Cards Superiores -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Card 1: Total Productos -->
+        <div class="card bg-primary text-primary-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Total Productos</h2>
+                        <p class="text-3xl font-bold">{{ total_productos }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        📦
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">+{{ crecimiento_productos }}%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Stock Bajo -->
+        <div class="card bg-warning text-warning-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Stock Bajo</h2>
+                        <p class="text-3xl font-bold">{{ cantidad_bajo }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        ⚠️
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Necesita atención</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Productos Activos -->
+        <div class="card bg-success text-success-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Productos Activos</h2>
+                        <p class="text-3xl font-bold">{{ productos_activos }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        ✅
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Disponibles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Valor Total -->
+        <div class="card bg-info text-info-content shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Valor Total</h2>
+                        <p class="text-3xl font-bold">${{ valor_total }}</p>
+                    </div>
+                    <div class="text-5xl opacity-80">
+                        💰
+                    </div>
+                </div>
+                <div class="card-actions justify-end">
+                    <div class="badge badge-outline">Inventario</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Búsqueda y Filtros -->
+    <div class="bg-base-200 rounded-2xl p-6 mb-8 shadow-lg">
+        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <!-- Barra de Búsqueda -->
+            <div class="flex-1 w-full lg:w-auto">
+                <form method="GET" class="flex gap-2">
+                    <div class="join flex-1">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            placeholder="Buscar productos..." 
+                            class="input input-bordered join-item flex-1"
+                            value="{{ request.GET.q }}"
+                        >
+                        <button type="submit" class="btn btn-primary join-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filtros y Acciones -->
+            <div class="flex gap-2 flex-wrap justify-center">
+                <button class="btn btn-outline btn-success" onclick="abrirModalAgregar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Nuevo Producto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Productos -->
+    <div class="bg-base-100 rounded-2xl shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <!-- head -->
+                <thead class="bg-base-200">
+                    <tr>
+                        <th>
+                            <label>
+                                <input type="checkbox" class="checkbox" />
+                            </label>
+                        </th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr id="fila-producto-{{ producto.id }}">
+                        <th>
+                            <label>
+                                <input type="checkbox" class="checkbox" />
+                            </label>
+                        </th>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">
+                                    <div class="mask mask-squircle w-12 h-12">
+                                        <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'img/dashboard.png' %}{% endif %}" 
+                                             alt="{{ producto.nombre }}" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ producto.nombre }}</div>
+                                    <div class="text-sm opacity-50">{{ producto.codigo|default:"Sin código" }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-ghost badge-sm">{{ producto.categoria }}</span>
+                        </td>
+                        <td>${{ producto.precio }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ producto.cantidad }}</span>
+                                {% if producto.cantidad < producto.cantidad_minimo %}
+                                <div class="tooltip" data-tip="Stock bajo">
+                                    <span class="text-warning">⚠️</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if producto.activo %}
+                            <span class="badge badge-success">Activo</span>
+                            {% else %}
+                            <span class="badge badge-error">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <!-- Botón Editar -->
+                                <button onclick="abrirModalEditar({{ producto.id }})" 
+                                        class="btn btn-ghost btn-xs btn-info tooltip" 
+                                        data-tip="Editar">
+                                    ✏️
+                                </button>
+                                
+                                <!-- Botón Ver Detalles -->
+                                <button onclick="verDetallesProducto({{ producto.id }})" 
+                                        class="btn btn-ghost btn-xs btn-warning tooltip" 
+                                        data-tip="Ver Detalles">
+                                    👁️
+                                </button>
+                                
+                                <!-- Botón Eliminar -->
+                                <button onclick="abrirModalEliminar({{ producto.id }}, '{{ producto.nombre|escapejs }}')" 
+                                        class="btn btn-ghost btn-xs btn-error tooltip" 
+                                        data-tip="Eliminar">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl">📦</span>
+                                <p class="text-lg">No se encontraron productos</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        {% if productos.has_other_pages %}
+        <div class="flex justify-center p-6 bg-base-200">
+            <div class="join">
+                {% if productos.has_previous %}
+                <a href="?page={{ productos.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                   class="join-item btn">«</a>
+                {% endif %}
+                
+                {% for i in productos.paginator.page_range %}
+                    {% if productos.number == i %}
+                    <a class="join-item btn btn-active">{{ i }}</a>
+                    {% else %}
+                    <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                       class="join-item btn">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if productos.has_next %}
+                <a href="?page={{ productos.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                   class="join-item btn">»</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Incluir el Modal de Productos -->
+{% include 'partials/productos-modal.html' %}
+
+<!-- Modal de Confirmación para Eliminar -->
+<dialog id="modalEliminar" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Confirmar Eliminación</h3>
+        <p class="py-4" id="mensajeEliminacion">¿Estás seguro de que deseas eliminar este producto?</p>
+        <div class="modal-action">
+            <button type="button" onclick="cerrarModalEliminar()" class="btn btn-ghost">Cancelar</button>
+            <button type="button" onclick="confirmarEliminacion()" class="btn btn-error">
+                <i class="fas fa-trash"></i> Sí, Eliminar
+            </button>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Scripts JavaScript -->
+<script>
+// Variables globales
+let productoAEliminar = null;
+
+// Función para abrir modal en modo AGREGAR
+function abrirModalAgregar() {
+    // Usar la función del modal productos
+    if (typeof abrirModalAgregarProducto === 'function') {
+        abrirModalAgregarProducto();
+    } else {
+        // Fallback si la función no existe
+        modal_producto.showModal();
+    }
+}
+
+// Función para abrir modal en modo EDITAR
+function abrirModalEditar(productoId) {
+    // Usar la función del modal productos
+    if (typeof abrirModalEditarProducto === 'function') {
+        abrirModalEditarProducto(productoId);
+    } else {
+        console.error('Función abrirModalEditarProducto no encontrada');
+        // Fallback: recargar la página con parámetros de edición
+        window.location.href = `?editar=${productoId}`;
+    }
+}
+
+// Función para ver detalles del producto
+function verDetallesProducto(productoId) {
+    // Redirigir a la página de detalles o mostrar modal de detalles
+    window.location.href = `/productos/detalle/${productoId}/`;
+}
+
+// Funciones para Eliminar Producto
+function abrirModalEliminar(productoId, productoNombre) {
+    productoAEliminar = productoId;
+    document.getElementById('mensajeEliminacion').textContent = 
+        `¿Estás seguro de que deseas eliminar el producto "${productoNombre}"? Esta acción no se puede deshacer.`;
+    document.getElementById('modalEliminar').showModal();
+}
+
+function cerrarModalEliminar() {
+    productoAEliminar = null;
+    document.getElementById('modalEliminar').close();
+}
+
+function confirmarEliminacion() {
+    if (!productoAEliminar) return;
+    eliminarProducto(productoAEliminar);
+}
+
+function eliminarProducto(productoId) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Mostrar loading en el botón de eliminar
+    const deleteButton = document.querySelector(`[onclick*="abrirModalEliminar(${productoId}"]`);
+    const originalHTML = deleteButton.innerHTML;
+    deleteButton.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+    deleteButton.disabled = true;
+    
+    fetch(`/productos/eliminar/${productoId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            mostrarMensajeGlobal('success', data.message);
+            
+            // Eliminar la fila de la tabla con animación
+            const fila = document.getElementById(`fila-producto-${productoId}`);
+            if (fila) {
+                fila.style.opacity = '0';
+                fila.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    fila.remove();
+                    // Si no quedan productos, mostrar mensaje
+                    const tbody = document.querySelector('tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center py-8">
+                                    <div class="flex flex-col items-center gap-2">
+                                        <span class="text-5xl">📦</span>
+                                        <p class="text-lg">No se encontraron productos</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }, 300);
+            }
+            
+            cerrarModalEliminar();
+            
+        } else {
+            mostrarMensajeGlobal('error', data.message || 'Error al eliminar el producto');
+            // Restaurar botón
+            deleteButton.innerHTML = originalHTML;
+            deleteButton.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensajeGlobal('error', 'Error de conexión');
+        deleteButton.innerHTML = originalHTML;
+        deleteButton.disabled = false;
+    });
+}
+
+// Función para mostrar mensajes globales
+function mostrarMensajeGlobal(tipo, mensaje) {
+    // Crear o actualizar contenedor de mensajes
+    let container = document.getElementById('globalMessages');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'globalMessages';
+        container.className = 'toast toast-top toast-end z-50';
+        document.body.appendChild(container);
+    }
+    
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-error';
+    const icon = tipo === 'success' ? '✓' : '✕';
+    
+    const toastId = 'toast-' + Date.now();
+    const toastHTML = `
+        <div id="${toastId}" class="alert ${alertClass} shadow-lg mb-2 transform transition-all duration-300 ease-in-out">
+            <div class="flex items-center gap-2">
+                <span class="font-bold">${icon}</span>
+                <span>${mensaje}</span>
+            </div>
+            <button onclick="document.getElementById('${toastId}').remove()" class="btn btn-sm btn-ghost">✕</button>
+        </div>
+    `;
+    
+    container.innerHTML += toastHTML;
+    
+    // Auto-eliminar después de 5 segundos
+    setTimeout(() => {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 5000);
+}
+
+// Inicializar tooltips si se usa DaisyUI
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar tooltips si es necesario
+    const tooltips = document.querySelectorAll('[data-tip]');
+    tooltips.forEach(tooltip => {
+        tooltip.addEventListener('mouseenter', function() {
+            // DaisyUI maneja los tooltips automáticamente
+        });
+    });
+});
+</script>
+
+<style>
+/* Transiciones suaves */
+tr {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Estilos para el toast */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.alert {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+</style>
+{% endblock %}

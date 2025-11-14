@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Registrar Comisión</h2>
+        <p class="mt-2 text-sm text-gray-600">Registre una nueva comisión para una venta específica.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Sección Información de la Comisión -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Columna Izquierda -->
+                <div class="space-y-6">
+                    <!-- Venta Asociada -->
+                    <div>
+                        <label for="{{ form.venta.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.venta.label }} *
+                        </label>
+                        {{ form.venta }}
+                        {% if form.venta.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.venta.help_text }}</p>
+                        {% endif %}
+                        {% if form.venta.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.venta.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Regla de Comisión -->
+                    <div>
+                        <label for="{{ form.regla.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.regla.label }} *
+                        </label>
+                        {{ form.regla }}
+                        {% if form.regla.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.regla.help_text }}</p>
+                        {% endif %}
+                        {% if form.regla.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.regla.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Usuario Beneficiario -->
+                    <div>
+                        <label for="{{ form.usuario.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.usuario.label }} *
+                        </label>
+                        {{ form.usuario }}
+                        {% if form.usuario.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.usuario.help_text }}</p>
+                        {% endif %}
+                        {% if form.usuario.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.usuario.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="space-y-6">
+                    <!-- Monto Comisión -->
+                    <div>
+                        <label for="{{ form.monto_comision.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.monto_comision.label }} *
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            {{ form.monto_comision }}
+                        </div>
+                        {% if form.monto_comision.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.monto_comision.help_text }}</p>
+                        {% endif %}
+                        {% if form.monto_comision.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.monto_comision.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Estado -->
+                    <div>
+                        <label for="{{ form.estado.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.estado.label }} *
+                        </label>
+                        {{ form.estado }}
+                        {% if form.estado.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.estado.help_text }}</p>
+                        {% endif %}
+                        {% if form.estado.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.estado.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fecha Pagada (condicional) -->
+                    <div id="fecha-pagada-container" class="hidden">
+                        <label for="{{ form.fecha_pagada.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-2">
+                            {{ form.fecha_pagada.label }} *
+                        </label>
+                        {{ form.fecha_pagada }}
+                        {% if form.fecha_pagada.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">{{ form.fecha_pagada.help_text }}</p>
+                        {% endif %}
+                        {% if form.fecha_pagada.errors %}
+                            <div class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ form.fecha_pagada.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Resumen -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h4 class="text-sm font-semibold text-gray-700 mb-3">Resumen de Comisión</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="font-medium text-gray-600">Monto Venta:</span>
+                        <span id="monto-venta" class="ml-2 text-gray-800">-</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-600">Comisión Empresa:</span>
+                        <span id="comision-empresa" class="ml-2 text-gray-800">-</span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-600">Comisión Usuario:</span>
+                        <span id="comision-usuario" class="ml-2 text-gray-800">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                <a href="{% url 'lista_comisiones' %}" class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 text-center">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Registrar Comisión
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const estadoSelector = document.getElementById('{{ form.estado.id_for_label }}');
+    const fechaPagadaContainer = document.getElementById('fecha-pagada-container');
+    const ventaSelect = document.getElementById('{{ form.venta.id_for_label }}');
+    const reglaSelect = document.getElementById('{{ form.regla.id_for_label }}');
+    
+    // Función para mostrar/ocultar fecha de pago
+    function toggleFechaPagada() {
+        if (estadoSelector.value === 'Pagada') {
+            fechaPagadaContainer.classList.remove('hidden');
+            // Establecer fecha actual por defecto
+            const fechaInput = document.getElementById('{{ form.fecha_pagada.id_for_label }}');
+            if (fechaInput && !fechaInput.value) {
+                const today = new Date().toISOString().split('T')[0];
+                fechaInput.value = today;
+            }
+        } else {
+            fechaPagadaContainer.classList.add('hidden');
+        }
+    }
+    
+    // Función para cargar información de la venta y regla
+    function cargarInformacionComision() {
+        const ventaId = ventaSelect.value;
+        const reglaId = reglaSelect.value;
+        
+        // Aquí podrías hacer una llamada AJAX para obtener información detallada
+        // Por ahora, solo mostramos placeholders
+        if (ventaId) {
+            document.getElementById('monto-venta').textContent = 'Cargando...';
+        }
+        
+        if (reglaId) {
+            document.getElementById('comision-empresa').textContent = 'Cargando...';
+            document.getElementById('comision-usuario').textContent = 'Cargando...';
+        }
+    }
+    
+    // Event listeners
+    estadoSelector.addEventListener('change', toggleFechaPagada);
+    ventaSelect.addEventListener('change', cargarInformacionComision);
+    reglaSelect.addEventListener('change', cargarInformacionComision);
+    
+    // Inicializar
+    toggleFechaPagada();
+    
+    // Si hay valores iniciales, cargar información
+    if (ventaSelect.value || reglaSelect.value) {
+        cargarInformacionComision();
+    }
+    
+    // Aplicar clases de color según el estado
+    function aplicarEstadosColor() {
+        const options = estadoSelector.options;
+        for (let option of options) {
+            switch(option.value) {
+                case 'Pagada':
+                    option.classList.add('text-green-600');
+                    break;
+                case 'Pendiente':
+                    option.classList.add('text-yellow-600');
+                    break;
+                case 'Cancelada':
+                    option.classList.add('text-red-600');
+                    break;
+            }
+        }
+    }
+    
+    aplicarEstadosColor();
+});
+</script>
+
+<style>
+.estado-selector option[value="Pagada"] {
+    color: #059669;
+}
+.estado-selector option[value="Pendiente"] {
+    color: #D97706;
+}
+.estado-selector option[value="Cancelada"] {
+    color: #DC2626;
+}
+</style>
+{% endblock %}
